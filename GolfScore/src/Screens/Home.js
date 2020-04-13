@@ -63,7 +63,7 @@ class Home extends Component {
     //   Actions.ScoreView({texts: [['P1','1','2','3','4','4','3','5','4','4'],['P2','4','2','3','4','3','4','4','3','5'],['P3','1','3','3','4','5','6','4','5','3']]})
        //this.showImagePicker()
        ImagePicker.openPicker({
-            height: 190,
+            height: 210,
             width : 500,
             cropping: true,
             includeBase64 : true
@@ -73,6 +73,7 @@ class Home extends Component {
              })
              googleAPI.postImage(image.data,(err,data) => {
                     console.log(data)
+                    Actions.ScoreView({"texts" : data})
                     this.setState({
                       showIndicator: false
                     })

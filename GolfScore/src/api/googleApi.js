@@ -27,9 +27,8 @@ class GoogleAPI {
                 if (googleVisionRes) {
                     lines = googleVisionRes.responses[0].fullTextAnnotation.text.split('\n')
                     console.log(lines)
-                     callback(null,lines)
-                    // score = this.processTexts(lines)
-                    //score = lines
+                     score = this.processTexts1(lines)
+                     callback(null,score)
                 }
             }).catch((error) => { console.log(error) })
 
@@ -107,6 +106,32 @@ class GoogleAPI {
         }
         console.log(score)
         return score
+    }
+
+    static processTexts1 = (lines) => {
+        var score = []
+        for(i=0;i<lines.length;i++){
+             lines[i] = lines[i].toUpperCase()
+             lines[i] = lines[i].replace(/[a-zA-Z:-|/ .-]/g,'')
+             lines[i] = lines[i].replace('-','') 
+             lines[i] = lines[i].split('')
+             if(lines[i].length >= 3){
+                 console.log(lines[i])
+                 if(lines[i].length >= 10){
+                     lines[i].pop()
+                 }
+                 score.push(lines[i])
+             }
+             
+         }
+         
+         for(i=0;i<score.length;i++){
+            score[i].splice(0,0,`P${i+1}`)
+            console.log(score[i])
+        }
+
+        return score;
+
     }
 
 }

@@ -22,7 +22,7 @@ import {
   DebugInstructions,
   ReloadInstructions,
 } from 'react-native/Libraries/NewAppScreen';
-
+import { connect} from 'react-redux'
 import {Icon} from 'native-base'
 
 const options = {
@@ -62,7 +62,7 @@ class ScoreView extends Component {
               hole = this.state.score[i].length
             }
        }
-       for(i=0;i<=hole;i++) {
+       for(i=0;i<=10;i++) {
           allHoles.push(i)
        }
 
@@ -72,7 +72,7 @@ class ScoreView extends Component {
 
     onPressButton() {
         if(this.state.isComplete){
-            this.goBackHome()
+            this.goCalculateScoreView(false)
             console.log("1231321")
         }
         // else {
@@ -98,20 +98,25 @@ class ScoreView extends Component {
        // }
     }
 
-    async goBackHome(){
-      if(this.state.score.length == this.state.score1.length){
-        var array = [...this.state.score1]
-        const array1 = [...this.state.score]
-        for(let i=0 ; i<this.state.score.length ; i++){
-              console.log(array[i])
-              array[i] = array[i].concat(array1[i].splice(1))
-        }
+     goCalculateScoreView = (isOnePage) => {
+       if(isOnePage){
+           Actions.ScoreView2({score: this.state.score,holes : this.findHoles()})
+       }
+       else {
+          if(this.state.score.length == this.state.score1.length){
+            var array = [...this.state.score1]
+            const array1 = [...this.state.score]
+            for(let i=0 ; i<this.state.score.length ; i++){
+                  console.log(array[i])
+                  array[i] = array[i].concat(array1[i].splice(1))
+            }
 
-        this.setState({score : array},() => {
-          console.log(array)
-          Actions.ScoreView2({score: array,holes : this.findHoles()})
-        })
-      }
+            this.setState({score : array},() => {
+              console.log(array)
+              Actions.ScoreView2({score: array,holes : this.findHoles()})
+            })
+          }
+       }
     }
 
     showImagePicker = () => {
@@ -208,21 +213,36 @@ class ScoreView extends Component {
     playerScoreElement = (holeNumber) => {
       return this.state.score.map((texts,key)=> {
          if(holeNumber ==0){
-           return <Text  style = {styles.column0}>{texts[holeNumber]}</Text>
+           return (
+                <View>
+                  <Text  style = {styles.column0}>{texts[holeNumber]}</Text>
+                  <Text style={{marginLeft : 10 , marginBottom : 10,padding : 3}}> </Text>
+                </View>
+           )
          }
          else if(holeNumber != this.state.holes.length-1){
-            return <TextInput
-                          returnKeyType = 'done' 
-                          style={styles.column1}
-                          editable={true}
-                          value={texts[holeNumber]}
-                          onChangeText={text => this.onChangeText(text,key,holeNumber)}
-                          keyboardType = 'number-pad'
-                    />
+            return( 
+                    <View>
+                      <TextInput
+                            returnKeyType = 'done' 
+                            style={styles.column1}
+                            editable={true}
+                            value={texts[holeNumber]}
+                            onChangeText={text => this.onChangeText(text,key,holeNumber)}
+                            keyboardType = 'number-pad'
+                      />
+                       <Text style={{marginLeft : 10 , marginBottom : 10,padding : 3,textAlign : 'center'}}>{parseInt(texts[holeNumber])-parseInt(this.props.par[holeNumber-1]) > 0 ?
+                          "+"+(parseInt(texts[holeNumber])-parseInt(this.props.par[holeNumber-1]).toString())
+                          :
+                          parseInt(texts[holeNumber])-parseInt(this.props.par[holeNumber-1])
+                          }
+                        </Text>
+                    </View>
+            )
          }
          else {
            return (
-               <TouchableOpacity onPress = {()=>{this.removePlayer(key)}} style = {{marginLeft : 10 , marginBottom : 5 ,padding : 6}}>
+               <TouchableOpacity onPress = {()=>{this.removePlayer(key)}} style = {{marginLeft : 10 , marginBottom : 35 ,padding : 6}}>
                          <Icon type="FontAwesome" name="remove" style = {{fontSize : 30,color : '#FF0000'}}/>
                </TouchableOpacity>
            )
@@ -248,7 +268,7 @@ class ScoreView extends Component {
                       }
                       keyExtractor={item => item.id}
                     />
-                  <View style = {{marginTop : 0,flexDirection : "row",justifyContent : 'space-evenly',marginLeft : 0 , marginRight : 0}}>
+                  {/* <View style = {{marginTop : 0,flexDirection : "row",justifyContent : 'space-evenly',marginLeft : 0 , marginRight : 0}}>
                       <Button 
                           title = 'Increase Hole' 
                           style = {{borderWidth : 1}}
@@ -258,23 +278,20 @@ class ScoreView extends Component {
                           title = 'Decrease Hole' 
                           onPress = {()=>{this.decreaseHole()}}
                       />
-                  </View>  
+                  </View>   */}
+
                   <View style = {styles.buttonView}>
                       <Button 
                           title = {this.state.isComplete ? "Calculate Score" : "Scan Next Page"}
                           onPress = {()=>{this.onPressButton()}}
                       />
+                      {!this.state.isComplete &&
+                         <Button 
+                          title = "Calculate Score"
+                          onPress = {()=>{this.goCalculateScoreView(true)}}
+                          />
+                      }  
                   </View>  
-                  {/*<View style = {{flexDirection: 'row',justifyContent : 'center'}}>
-                      <Button 
-                          title = 'Export PDF' 
-                          onPress = {()=>{this.onPressButton()}}
-                      />
-                      <Button 
-                          title = 'Export CSV' 
-                          onPress = {()=>{this.onPressButton()}}
-                      />
-                  </View> */}
 
               </View>
               {this.state.showIndicator && 
@@ -340,4 +357,10 @@ const styles = StyleSheet.create({
   }
 })
 
-export default ScoreView
+const mapStateToProps = state => ({
+    courseName : state.courseName,
+    par : state.par,
+    hcp : state.hcp
+});
+
+export default connect(mapStateToProps)(ScoreView)

@@ -71,7 +71,7 @@ class ScoreView2 extends Component {
       console.log(scores)
       for(j=0 ;j< this.state.score.length;j++){
         var hcp = 0
-        for(i=0;i<this.props.par.length;i++){
+        for(i=0;i<this.state.score.length;i++){
           if(this.props.par[i]-parseInt(this.state.score[j][i+1])==1){
               hcp += 1
           }
@@ -105,7 +105,7 @@ class ScoreView2 extends Component {
            return (
                 <View>
                   <Text  style = {styles.column0}>{texts[holeNumber]}</Text>
-                  <Text style={{marginLeft : 10 , marginBottom : 0,padding : 3}}> </Text>
+                  <Text style={{marginLeft : 10 , marginBottom : 10,padding : 3}}> </Text>
                 </View>
            )
          }
@@ -114,13 +114,13 @@ class ScoreView2 extends Component {
                   <View>
                     <TextInput
                             returnKeyType = 'done' 
-                            style={{textAlign : 'center',marginLeft : 10 , marginBottom : 5 , borderWidth : 1,padding : 6 , color : this.calculateColor(texts[holeNumber],holeNumber),fontSize : 20, borderRadius : 2,fontFamily: 'Avenir Next' }}
+                            style={{textAlign : 'center',marginLeft : 10 , marginBottom : 0 , borderWidth : 1,padding : 6 , color : this.calculateColor(texts[holeNumber],holeNumber),fontSize : 20, borderRadius : 2,fontFamily: 'Avenir Next' }}
                             editable={false}
                             value={texts[holeNumber]}
                             onChangeText={text => this.onChangeText(text,key,holeNumber)}
                             keyboardType = 'number-pad'
                       />
-                      <Text style={{marginLeft : 10 , marginBottom : 0,padding : 3,textAlign : 'center'}}>{parseInt(texts[holeNumber])-parseInt(this.props.par[holeNumber-1]) > 0 ?
+                      <Text style={{marginLeft : 10 , marginBottom : 10,padding : 3,textAlign : 'center'}}>{parseInt(texts[holeNumber])-parseInt(this.props.par[holeNumber-1]) > 0 ?
                           "+"+(parseInt(texts[holeNumber])-parseInt(this.props.par[holeNumber-1]).toString())
                           :
                           parseInt(texts[holeNumber])-parseInt(this.props.par[holeNumber-1])
@@ -205,7 +205,7 @@ const styles = StyleSheet.create({
     },
   column0 : {
     marginLeft : 10 , 
-    marginBottom : 5 , 
+    marginBottom : 0 , 
     borderWidth : 1,
     padding : 6 , 
     backgroundColor : '#efeff5',

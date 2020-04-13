@@ -13,8 +13,9 @@ class AddCourseScreen extends React.Component {
         par : [],
         hcp : [],
         holes : [],
-        numOfHoles : 0,
+        numOfHoles : 18,
         courseName : "",
+        currentHole : 1,
       }
     }
 
@@ -58,13 +59,13 @@ class AddCourseScreen extends React.Component {
     
     editPar = (text,holesNumber) => {
         const par = [...this.state.par]
-        par[holesNumber-1] = text
+        par[holesNumber] = text
         this.setState({par : par})
     }
 
     editHcp = (text,holesNumber) => {
         const hcp = [...this.state.hcp]
-        hcp[holesNumber-1] = text
+        hcp[holesNumber] = text
         this.setState({hcp : hcp})
     }
     
@@ -105,15 +106,16 @@ class AddCourseScreen extends React.Component {
                 </View>
                 <View style = {styles.textInput}>
                     <TextInput
+                        style = {{borderBottomWidth : 1,marginTop : 20, fontSize : 30,alignItems : 'center'}}
                         autoCapitalize = "none"
                         autoCorrect = {false}
                         placeholder = "Name Golf Course" 
-                        style = {styles.textInput}
+                   
                         value={this.state.courseName}
                         onChangeText = {text => this.onChangeCourseName(text)}
                         onEndEditing = {this.onEndEditing}
                     />
-                    <TextInput
+                    {/* <TextInput
                         autoCapitalize = "none"
                         autoCorrect = {false}
                         placeholder = "Num Of Holes" 
@@ -122,9 +124,19 @@ class AddCourseScreen extends React.Component {
                         keyboardType = "number-pad"
                         onChangeText = {text => this.onChangeNumOfHoles(text)}
                         onEndEditing = {this.onEndEditing}
-                    />
+                    /> */}
                 </View>
-                <View style = {{alignItems : 'center'}}>
+                    {this.state.currentHole == 19 ?
+                        this.parhcpList() :
+                        this.editDetailComponent()
+                    }
+            </View>
+        )
+    }
+
+    parhcpList = () => {
+        return (
+            <View style = {{alignItems : 'center'}}>
                     <View style = {{height : 200}}>
                         <FlatList
                                 style = {{paddingTop : 10}}
@@ -147,7 +159,8 @@ class AddCourseScreen extends React.Component {
                                                                 autoCorrect = {false}
                                                                 placeholder = ""
                                                                 value={this.state.par[item.holesNumber-1]}
-                                                                onChangeText = {text => this.editPar(text,item.holesNumber)}
+                                                                onChangeText = {text => this.editPar(text,item.holesNumber-1)}
+                                                                editable = {false}                                                 
                                                             />
                                                             <TextInput
                                                                 style = {styles.parhcp}
@@ -155,7 +168,8 @@ class AddCourseScreen extends React.Component {
                                                                 autoCorrect = {false}
                                                                 placeholder = ""
                                                                 value={this.state.hcp[item.holesNumber-1]}
-                                                                onChangeText = {text => this.editHcp(text,item.holesNumber)}
+                                                                onChangeText = {text => this.editHcp(text,item.holesNumber-1)}
+                                                                editable = {false} 
                                                             />
                                                         </View>
                                                     }      
@@ -164,11 +178,48 @@ class AddCourseScreen extends React.Component {
                                 keyExtractor={item => item.key}
                             />
                     </View>
-                    <TouchableOpacity onPress={()=>this.goBackHome()} style ={styles.buttonView}>
+                     <TouchableOpacity onPress={()=>this.goBackHome()} style ={styles.buttonView}>
                         <Text style = {styles.confirmButton}> บันทึก </Text>
                     </TouchableOpacity>
-                 </View> 
-            </View>
+                </View>
+        )
+    }
+
+    editDetailComponent = () => {
+        return (
+            <View style = {{alignItems : 'center',marginTop : 30}}>
+                        <Text style = {styles.hole0}>Hole {this.state.currentHole}</Text>
+                        <TextInput
+                            style = {{borderBottomWidth : 1,marginTop : 20, fontSize : 30,alignItems : 'center'}}
+                            autoCapitalize = "none"
+                            autoCorrect = {false}
+                            placeholder = "Par" 
+                            value={this.state.par[this.state.currentHole-1]}
+                            onChangeText = {text => this.editPar(text,this.state.currentHole-1)}
+                            onEndEditing = {this.onEndEditing}
+                            keyboardType = 'number-pad'
+                            maxLength={1}
+                          />
+                          <TextInput
+                            style = {{borderBottomWidth : 1,marginTop : 20, fontSize : 30,alignItems : 'center'}}
+                            autoCapitalize = "none"
+                            autoCorrect = {false}
+                            placeholder = "Hcp" 
+                            value={this.state.hcp[this.state.currentHole-1]}
+                            onChangeText = {text => this.editHcp(text,this.state.currentHole-1)}
+                            onEndEditing = {this.onEndEditing}
+                            keyboardType = 'number-pad'
+                            maxLength={2}
+                          />
+                          <View style = {{flexDirection : 'row'}}>
+                            <TouchableOpacity onPress={()=>this.setState({currentHole : (this.state.currentHole) >= 2 ? this.state.currentHole - 1 : 1})} style ={styles.buttonView}>
+                                <Text style = {styles.changeHole}> Previous </Text>
+                            </TouchableOpacity> 
+                            <TouchableOpacity onPress={()=>this.setState({currentHole : this.state.currentHole + 1})} style ={styles.buttonView}>
+                                <Text style = {styles.changeHole}> Next </Text>
+                            </TouchableOpacity>
+                          </View>
+           </View>
         )
     }
 }
@@ -201,7 +252,7 @@ const styles = StyleSheet.create({
         fontWeight : 'bold',
         fontSize : 20, 
         borderRadius : 2,
-        width : 60,
+        width : 80,
         textAlign : 'center'
     },
 
@@ -253,10 +304,18 @@ const styles = StyleSheet.create({
     },
     buttonView : {
         borderRadius : 4 , 
-        paddingHorizontal : 30,
-        paddingVertical : 12,
+        paddingHorizontal : 10,
+        paddingVertical : 5,
         backgroundColor : "#1870FF",
         marginTop : 50,
+        width : 110,
+        marginLeft : 10,
+        marginRight : 10,
+        alignItems : 'center'
+    },
+    changeHole : {
+        fontSize : 20,
+        color : '#FFFFFF'
     }
 })
 
