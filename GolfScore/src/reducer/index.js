@@ -5,7 +5,6 @@ const defaultStore = {
 }
 
 const golfApp = (state = defaultStore, action) => {
-	console.log(state, action)
 	switch (action.type) {
 		case 'SET_COURSE_NAME':
 			return {

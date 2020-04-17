@@ -44,7 +44,8 @@ class ScoreView extends Component {
         score1 : [''],
         showIndicator : false,
         isComplete : false,
-        holes : []
+        holes : [],
+        hole : 0,
       }
     }
 
@@ -62,7 +63,7 @@ class ScoreView extends Component {
               hole = this.state.score[i].length
             }
        }
-       for(i=0;i<=10;i++) {
+       for(i=0;i<=10+this.state.hole;i++) {
           allHoles.push(i)
        }
 
@@ -78,7 +79,8 @@ class ScoreView extends Component {
         // else {
           this.setState({
                       isComplete : true,
-                      score1 : this.state.score
+                      score1 : this.state.score,
+                      hole : 9,
           },() =>{
             const data = [['P1','5','2','3','4','4','3','5','4','4'],['P2','4','2','3','4','3','4','4','3','5'],['P3','1','3','3','4','5','6','4','5','3']]
 
@@ -87,15 +89,6 @@ class ScoreView extends Component {
                       score : data,
                     })
           })
-        //   console.log(this.state.score)
-        //   this.showImagePicker()
-        // const data = [['P1','5','2','3','4','4','3','5','4','4'],['P2','4','2','3','4','3','4','4','3','5'],['P3','1','3','3','4','5','6','4','5','3']]
-
-        //             this.setState({
-        //               showIndicator: false,
-        //               score : data,
-        //             })
-       // }
     }
 
      goCalculateScoreView = (isOnePage) => {
@@ -171,43 +164,7 @@ class ScoreView extends Component {
     onChangeText = (text,key,item) => {
         const newArray = [...this.state.score];
         newArray[key][item]=text
-        // if(text == '')
-        //     newArray.splice(key,1)
-        this.setState({score : newArray})
-        console.log(text)
-        console.log(key)
-        console.log(item)
-    }
-
-    increaseHole = () =>{
-        var allHoles = [...this.state.holes]
-        allHoles.push(this.state.holes.length)
-        this.setState({holes : allHoles})
-        var score = [...this.state.score]
-        for(var i=0;i<score.length;i++)
-          score[i].push("")
-        this.setState({score:score})
-    }
-
-    decreaseHole = () =>{
-        var allHoles = [...this.state.holes]
-        allHoles.pop()
-        this.setState({holes : allHoles})
-        var score = [...this.state.score]
-        var maxLenght = 0
-        for(var i=0;i<score.length;i++){
-          if(maxLenght < score[i].length){
-            maxLenght = score[i].length
-          }
-        }
-        
-        for(var i=0;i<score.length;i++){
-          if(maxLenght == score[i].length){
-             score[i].pop()
-          }
-        }
-
-        this.setState({score:score},()=>{console.log(this.state.score)})
+        this.setState({score : newArray})   
     }
 
     playerScoreElement = (holeNumber) => {
@@ -215,7 +172,7 @@ class ScoreView extends Component {
          if(holeNumber ==0){
            return (
                 <View>
-                  <Text  style = {styles.column0}>{texts[holeNumber]}</Text>
+                  <Text style = {styles.column0}>{texts[holeNumber]}</Text>
                   <Text style={{marginLeft : 10 , marginBottom : 10,padding : 3}}> </Text>
                 </View>
            )
@@ -250,46 +207,43 @@ class ScoreView extends Component {
       })
     }
 
+   
     render(){
-        console.log(this.state.score[0].length)
         return (
-            <View style = {{flex:1,backgroundColor : 'white'}}>
+            <ScrollView style = {{flex:1,backgroundColor : 'white'}}>
+              <View style = {styles.button}>
+                    <Button title = "< Back" onPress={()=>{Actions.reset('Home')}}/>
+              </View>
               <View style = {{backgroundColor : 'white'}}>
                     <FlatList
-                      style = {{padding : 5}}
+                      style = {{padding : 0,marginLeft : 10}}
                       horizontal
                       showsHorizontalScrollIndicator={false}
                       data={this.state.holes}
                       renderItem={({ item ,key}) => 
                                       <View>
-                                        <Text style = {{marginLeft : 10 , marginBottom : 5 ,marginTop : 10, borderWidth : 1,padding : 6 , backgroundColor : '#d6ff00',fontWeight : 'bold',fontSize : 20, borderRadius : 2}}>{item === 0 ? 'Hole' : this.state.isComplete ? parseInt(item)+this.state.score1[0].length-1 : item}</Text>
+                                        <Text style = {styles.row0}>{item === 0 ? 'Hole' : item + this.state.hole}</Text>
                                         {this.playerScoreElement(item)}  
+                                        {item < this.state.holes.length - 1 ?
+                                          <View>
+                                          <Text style = {item === 0 ? styles.parhcp : styles.parhcp}>{item === 0 ? 'Par' : this.props.par[item-1+this.state.hole]}</Text>
+                                          <Text style = {item === 0 ? styles.parhcp : styles.parhcp}>{item === 0 ? 'Hcp' : this.props.hcp[item-1+this.state.hole]}</Text>
+                                          </View>
+                                          :
+                                          null
+                                        }
                                       </View>
                       }
                       keyExtractor={item => item.id}
                     />
-                  {/* <View style = {{marginTop : 0,flexDirection : "row",justifyContent : 'space-evenly',marginLeft : 0 , marginRight : 0}}>
-                      <Button 
-                          title = 'Increase Hole' 
-                          style = {{borderWidth : 1}}
-                          onPress = {()=>{this.increaseHole()}}
-                      />
-                      <Button 
-                          title = 'Decrease Hole' 
-                          onPress = {()=>{this.decreaseHole()}}
-                      />
-                  </View>   */}
-
                   <View style = {styles.buttonView}>
-                      <Button 
-                          title = {this.state.isComplete ? "Calculate Score" : "Scan Next Page"}
-                          onPress = {()=>{this.onPressButton()}}
-                      />
+                       <TouchableOpacity style = {styles.buttonTouchable} onPress = {()=>{this.onPressButton()}} >
+                         <Text style = {styles.buttonText}> {this.state.isComplete ? "Calculate Score" : "Scan Next Page"}</Text>
+                       </TouchableOpacity>
                       {!this.state.isComplete &&
-                         <Button 
-                          title = "Calculate Score"
-                          onPress = {()=>{this.goCalculateScoreView(true)}}
-                          />
+                         <TouchableOpacity style = {styles.buttonTouchable} onPress = {()=>{this.goCalculateScoreView(true)}} >
+                            <Text style = {styles.buttonText}>Calculate Score</Text>
+                         </TouchableOpacity>  
                       }  
                   </View>  
 
@@ -301,7 +255,7 @@ class ScoreView extends Component {
                       </View>
                     </View>
               }
-            </View>
+            </ScrollView>
         )
     }
     
@@ -336,10 +290,10 @@ const styles = StyleSheet.create({
   },
   column0 : {
     marginLeft : 10 , 
-    marginBottom : 5 , 
-    borderWidth : 1,
+    marginBottom : 3 , 
+    borderWidth : 0,
     padding : 6 , 
-    backgroundColor : '#efeff5',
+    backgroundColor : '#ffffff',
     fontWeight : 'bold',
     fontSize : 20, 
     borderRadius : 2,
@@ -349,12 +303,65 @@ const styles = StyleSheet.create({
     marginLeft : 10 , 
     marginBottom : 5 , 
     borderWidth : 1,
-    padding : 6 , 
-    backgroundColor : '#efeff5',
+    padding : 4 , 
+    backgroundColor : '#ffffff',
     fontSize : 20, 
     borderRadius : 2,
-    fontFamily: 'Avenir Next'
-  }
+    fontFamily: 'Avenir Next',
+    textAlign : 'center'
+  },
+  row0 : {
+    marginLeft : 0 ,
+    marginBottom : 10 ,
+    marginTop : 10,
+    borderWidth : 0,
+    padding : 6 ,
+    backgroundColor : '#323232',
+    color : "#FFFFFF",
+    fontWeight : 'bold',
+    fontSize : 20, 
+    borderRadius : 2,
+    width : 60,
+    textAlign : 'center',
+  },
+
+  buttonTouchable : {
+      borderRadius : 30,
+      borderWidth : 2,
+      paddingHorizontal : 30,
+      paddingVertical : 10,
+      backgroundColor : '#000000',
+      marginBottom : 20
+  },
+  buttonText : {
+      fontSize : 20,
+      color : '#FFFFFF',
+      textAlign : 'center',
+      fontFamily: 'Avenir Next'
+  },
+  buttonView: {
+      marginTop : 30,
+      alignSelf : 'center',
+      textAlign : 'center',
+      justifyContent : 'center',
+  },
+  parhcp : { 
+      //  marginLeft : 1 , 
+        marginBottom : 0 ,
+        marginTop : 0, 
+        backgroundColor : '#323232',
+        padding : 6,
+        fontSize : 20, 
+        borderRadius : 2,
+        textAlign : 'center',
+        color : '#FFFFFF',
+        fontWeight : 'bold',
+    },
+    button : { 
+        alignItems :'flex-start',
+        marginLeft : 10,
+        marginTop : 30
+    },
 })
 
 const mapStateToProps = state => ({

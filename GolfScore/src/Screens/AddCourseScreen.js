@@ -80,14 +80,11 @@ class AddCourseScreen extends React.Component {
                 par,
                 hcp
             }).then((data)=>{
-                //success callback
                 this.props.setCourseName(this.state.courseName)
                 this.props. setPar(this.state.par)
                 this.props.setHcp(this.state.hcp)
-                Actions.reset('Tabbar')
-                console.log('data ' , data)
+                Actions.reset('HOME')
             }).catch((error)=>{
-                //error callback
                 console.log('error ' , error)
             })
         }
@@ -98,11 +95,10 @@ class AddCourseScreen extends React.Component {
     }
 
     render() {
-
         return(
             <View style = {styles.container}>
                 <View style = {styles.button}>
-                        <Button title = "< Back" onPress={()=>{this.goSearchScreen()}}/>
+                    <Button title = "< Back" onPress={()=>{this.goSearchScreen()}}/>
                 </View>
                 <View style = {styles.textInput}>
                     <TextInput
@@ -115,16 +111,6 @@ class AddCourseScreen extends React.Component {
                         onChangeText = {text => this.onChangeCourseName(text)}
                         onEndEditing = {this.onEndEditing}
                     />
-                    {/* <TextInput
-                        autoCapitalize = "none"
-                        autoCorrect = {false}
-                        placeholder = "Num Of Holes" 
-                        style = {styles.textInput}
-                        value={this.state.numOfHoles}
-                        keyboardType = "number-pad"
-                        onChangeText = {text => this.onChangeNumOfHoles(text)}
-                        onEndEditing = {this.onEndEditing}
-                    /> */}
                 </View>
                     {this.state.currentHole == 19 ?
                         this.parhcpList() :
@@ -137,88 +123,88 @@ class AddCourseScreen extends React.Component {
     parhcpList = () => {
         return (
             <View style = {{alignItems : 'center'}}>
-                    <View style = {{height : 200}}>
-                        <FlatList
-                                style = {{paddingTop : 10}}
-                                horizontal
-                                showsHorizontalScrollIndicator={false}
-                                data={this.state.holes}
-                                renderItem={({ item ,key}) => 
-                                                <View>
-                                                    <Text style = {item.holesNumber === 0 ? styles.hole0 :styles.hole}>{item.holesNumber === 0 ? 'Hole' : item.holesNumber}</Text>
-                                                    { item.holesNumber == 0 ?
-                                                        <View>
-                                                            <Text style = {styles.parhcp0 }> Par</Text>
-                                                            <Text style = {styles.parhcp0 }> Hcp</Text>
-                                                        </View>
-                                                         :
-                                                         <View>
-                                                            <TextInput
-                                                                style = {styles.parhcp}
-                                                                autoCapitalize = "none"
-                                                                autoCorrect = {false}
-                                                                placeholder = ""
-                                                                value={this.state.par[item.holesNumber-1]}
-                                                                onChangeText = {text => this.editPar(text,item.holesNumber-1)}
-                                                                editable = {false}                                                 
-                                                            />
-                                                            <TextInput
-                                                                style = {styles.parhcp}
-                                                                autoCapitalize = "none"
-                                                                autoCorrect = {false}
-                                                                placeholder = ""
-                                                                value={this.state.hcp[item.holesNumber-1]}
-                                                                onChangeText = {text => this.editHcp(text,item.holesNumber-1)}
-                                                                editable = {false} 
-                                                            />
-                                                        </View>
-                                                    }      
-                                                </View>
-                                }
-                                keyExtractor={item => item.key}
-                            />
-                    </View>
-                     <TouchableOpacity onPress={()=>this.goBackHome()} style ={styles.buttonView}>
-                        <Text style = {styles.confirmButton}> บันทึก </Text>
-                    </TouchableOpacity>
+                <View style = {{height : 200}}>
+                    <FlatList
+                        style = {{paddingTop : 10}}
+                        horizontal
+                        showsHorizontalScrollIndicator={false}
+                        data={this.state.holes}
+                        renderItem={({ item ,key}) => 
+                             <View>
+                                <Text style = {item.holesNumber === 0 ? styles.hole0 :styles.hole}>{item.holesNumber === 0 ? 'Hole' : item.holesNumber}</Text>
+                                    { item.holesNumber == 0 ?
+                                        <View>
+                                            <Text style = {styles.parhcp0 }> Par</Text>
+                                            <Text style = {styles.parhcp0 }> Hcp</Text>
+                                        </View>
+                                        :
+                                        <View>
+                                            <TextInput
+                                                style = {styles.parhcp}
+                                                autoCapitalize = "none"
+                                                autoCorrect = {false}
+                                                placeholder = ""
+                                                value={this.state.par[item.holesNumber-1]}
+                                                onChangeText = {text => this.editPar(text,item.holesNumber-1)}
+                                                editable = {false}                                                 
+                                            />
+                                            <TextInput
+                                                style = {styles.parhcp}
+                                                autoCapitalize = "none"
+                                                autoCorrect = {false}
+                                                placeholder = ""
+                                                value={this.state.hcp[item.holesNumber-1]}
+                                                onChangeText = {text => this.editHcp(text,item.holesNumber-1)}
+                                                editable = {false} 
+                                            />
+                                        </View>
+                                    }      
+                            </View>
+                        }
+                        keyExtractor={item => item.key}
+                    />
                 </View>
+                <TouchableOpacity onPress={()=>this.goBackHome()} style ={styles.buttonView}>
+                    <Text style = {styles.confirmButton}> บันทึก </Text>
+                </TouchableOpacity>
+            </View>
         )
     }
 
     editDetailComponent = () => {
         return (
             <View style = {{alignItems : 'center',marginTop : 30}}>
-                        <Text style = {styles.hole0}>Hole {this.state.currentHole}</Text>
-                        <TextInput
-                            style = {{borderBottomWidth : 1,marginTop : 20, fontSize : 30,alignItems : 'center'}}
-                            autoCapitalize = "none"
-                            autoCorrect = {false}
-                            placeholder = "Par" 
-                            value={this.state.par[this.state.currentHole-1]}
-                            onChangeText = {text => this.editPar(text,this.state.currentHole-1)}
-                            onEndEditing = {this.onEndEditing}
-                            keyboardType = 'number-pad'
-                            maxLength={1}
-                          />
-                          <TextInput
-                            style = {{borderBottomWidth : 1,marginTop : 20, fontSize : 30,alignItems : 'center'}}
-                            autoCapitalize = "none"
-                            autoCorrect = {false}
-                            placeholder = "Hcp" 
-                            value={this.state.hcp[this.state.currentHole-1]}
-                            onChangeText = {text => this.editHcp(text,this.state.currentHole-1)}
-                            onEndEditing = {this.onEndEditing}
-                            keyboardType = 'number-pad'
-                            maxLength={2}
-                          />
-                          <View style = {{flexDirection : 'row'}}>
-                            <TouchableOpacity onPress={()=>this.setState({currentHole : (this.state.currentHole) >= 2 ? this.state.currentHole - 1 : 1})} style ={styles.buttonView}>
-                                <Text style = {styles.changeHole}> Previous </Text>
-                            </TouchableOpacity> 
-                            <TouchableOpacity onPress={()=>this.setState({currentHole : this.state.currentHole + 1})} style ={styles.buttonView}>
-                                <Text style = {styles.changeHole}> Next </Text>
-                            </TouchableOpacity>
-                          </View>
+                <Text style = {styles.hole0}>Hole {this.state.currentHole}</Text>
+                <TextInput
+                    style = {{borderBottomWidth : 1,marginTop : 20, fontSize : 30,alignItems : 'center'}}
+                    autoCapitalize = "none"
+                    autoCorrect = {false}
+                    placeholder = "Par" 
+                    value={this.state.par[this.state.currentHole-1]}
+                    onChangeText = {text => this.editPar(text,this.state.currentHole-1)}
+                    onEndEditing = {this.onEndEditing}
+                    keyboardType = 'number-pad'
+                    maxLength={1}
+                  />
+                  <TextInput
+                    style = {{borderBottomWidth : 1,marginTop : 20, fontSize : 30,alignItems : 'center'}}
+                    autoCapitalize = "none"
+                    autoCorrect = {false}
+                    placeholder = "Hcp" 
+                    value={this.state.hcp[this.state.currentHole-1]}
+                    onChangeText = {text => this.editHcp(text,this.state.currentHole-1)}
+                    onEndEditing = {this.onEndEditing}
+                    keyboardType = 'number-pad'
+                    maxLength={2}
+                  />
+                  <View style = {{flexDirection : 'row'}}>
+                    <TouchableOpacity onPress={()=>this.setState({currentHole : (this.state.currentHole) >= 2 ? this.state.currentHole - 1 : 1})} style ={styles.buttonView}>
+                        <Text style = {styles.changeHole}> Previous </Text>
+                    </TouchableOpacity> 
+                    <TouchableOpacity onPress={()=>this.setState({currentHole : this.state.currentHole + 1})} style ={styles.buttonView}>
+                        <Text style = {styles.changeHole}> Next </Text>
+                    </TouchableOpacity>
+                  </View>
            </View>
         )
     }
@@ -228,10 +214,8 @@ const styles = StyleSheet.create({
     container: {
         backgroundColor : '#FFFFFF',
         flex : 1,
-        
     },
     hole : { 
-        //marginLeft : 1 , 
         marginBottom : 5 ,
         marginTop : 10, 
         padding : 6,
@@ -244,7 +228,6 @@ const styles = StyleSheet.create({
     },
 
     hole0 : { 
-      //  marginLeft : 1 , 
         marginBottom : 5 ,
         marginTop : 10, 
         padding : 6,
@@ -268,8 +251,7 @@ const styles = StyleSheet.create({
         textAlign : 'center'
     },
 
-    parhcp0 : { 
-       // marginLeft : 1 , 
+    parhcp0 : {  
         marginBottom : 5 ,
         marginTop : 10, 
         width : 60,
@@ -280,17 +262,9 @@ const styles = StyleSheet.create({
         borderRadius : 2,
         textAlign : 'center'
     },
-    title : {
-        marginTop : 10,
-        fontSize : 30 
-    },
     confirmButton : {
         fontSize : 30,
         color : '#FFFFFF'
-    },
-    holesNum : {
-        marginTop : 10,
-        fontSize : 20 
     },
     button : { 
         alignItems :'flex-start',
@@ -319,13 +293,10 @@ const styles = StyleSheet.create({
     }
 })
 
-const mapStateToProps = state => ({
+const mapDispatchToProps = (dispatch) => ({
+    setCourseName: (courseName) => dispatch(setCourseName(courseName)),
+    setPar: (par) => dispatch(setPar(par)),
+    setHcp: (hcp) => dispatch(setHcp(hcp))
 });
 
-const mapDispatchToProps = dispatch => ({
-  setCourseName: (courseName) => dispatch(setCourseName(courseName)),
-  setPar: (par) => dispatch(setPar(par)),
-  setHcp: (hcp) => dispatch(setHcp(hcp))
-});
-
-export default connect(mapStateToProps, mapDispatchToProps)(AddCourseScreen);
+export default connect(mapDispatchToProps)(AddCourseScreen);

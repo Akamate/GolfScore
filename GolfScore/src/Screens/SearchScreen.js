@@ -16,7 +16,6 @@ class SearchScreen extends React.Component {
     }
 
     componentDidMount (){
-        console.log(db)
         db.ref('/courseLists').on('value', querySnapShot => {
              let data = querySnapShot.val() ? querySnapShot.val() : {};
              console.log(data)
@@ -38,7 +37,6 @@ class SearchScreen extends React.Component {
     }
    
     searchApi(term) {
-       
        db.ref('/courseLists').orderByChild('courseName')
                  .startAt(term.toLowerCase())
                  .endAt(term.toLowerCase()+"\uf8ff")
@@ -96,7 +94,7 @@ class SearchScreen extends React.Component {
                       data={this.state.results}
                       renderItem={({ item ,key}) => 
                                       <TouchableOpacity onPress={()=> this.gotoCourseDetail(item.key)}>
-                                        <Text style = {{marginLeft : 10 , marginBottom : 5 ,marginTop : 10,padding : 6 , backgroundColor : '#FFFFFF',fontSize : 20 ,fontFamily :'Avenir Next'}}>{item.courseName}</Text>
+                                        <Text style = {styles.courseName}>{item.courseName}</Text>
                                         <View style = {{height : 1,borderWidth : 0.5,marginHorizontal : 20,borderColor : '#F0EEEE'}}></View>
                                       </TouchableOpacity>
                       }
@@ -130,7 +128,17 @@ const styles = StyleSheet.create({
         position: 'absolute',
         right: 5,
         top: 40,
+    },
+    courseName : {
+        marginLeft : 10 , 
+        marginBottom : 5 ,
+        marginTop : 10,
+        padding : 6 , 
+        backgroundColor : '#FFFFFF',
+        fontSize : 20 ,
+        fontFamily :'Avenir Next'
     }
 })
+   
 
 export default SearchScreen

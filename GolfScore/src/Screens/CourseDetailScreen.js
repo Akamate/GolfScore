@@ -48,7 +48,7 @@ class CourseDetailScreen extends React.Component {
          this.props.setCourseName(this.state.courseName)
          this.props. setPar(this.state.par)
          this.props.setHcp(this.state.hcp)
-         Actions.reset('Tabbar')
+         Actions.reset('Home')
     }
 
     goSearchScreen = () => {
