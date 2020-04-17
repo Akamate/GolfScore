@@ -1,8 +1,9 @@
 import React from 'react'
 import {View,Text,FlatList,StyleSheet,TouchableOpacity,Button} from 'react-native'
 import {Actions} from 'react-native-router-flux'
-import { connect} from 'react-redux'
+import {connect} from 'react-redux'
 import {setCourseName,setPar,setHcp} from '../reducer/actions'
+import CustomButton from '../Components/CustomButton'
 
 class CourseDetailScreen extends React.Component {
 
@@ -37,11 +38,10 @@ class CourseDetailScreen extends React.Component {
     findHoles(){
        var hole = 0
        var allHoles = [...this.state.holes]
-       for(i=0;i<=this.state.par.length;i++) {
+       for(i=0;i<=18;i++) {
           allHoles.push({key : i,holesNumber : i})
        }
        this.setState({holes: allHoles})
-       console.log(this.state.holes)
     }
 
     goBackHome = () => {
@@ -73,7 +73,7 @@ class CourseDetailScreen extends React.Component {
                                 data={this.state.holes}
                                 renderItem={({ item ,key}) => 
                                                 <View>
-                                                    <Text style = {item.holesNumber === 0 ? styles.hole0 :styles.hole}>{item.holesNumber === 0 ? 'Hole' : item.holesNumber}</Text>
+                                                    <Text style = {styles.hole}>{item.holesNumber === 0 ? 'Hole' : item.holesNumber}</Text>
                                                     <Text style = {item.holesNumber === 0 ? styles.parhcp0 : styles.parhcp}>{item.holesNumber === 0 ? 'Par' : this.state.par[item.holesNumber-1]}</Text>
                                                     <Text style = {item.holesNumber === 0 ? styles.parhcp0 : styles.parhcp}>{item.holesNumber === 0 ? 'Hcp' : this.state.hcp[item.holesNumber-1]}</Text>
                                                 </View>
@@ -81,9 +81,10 @@ class CourseDetailScreen extends React.Component {
                                 keyExtractor={item => item.key}
                             />
                     </View>
-                    <TouchableOpacity onPress={()=>this.goBackHome()}>
-                        <Text style = {styles.confirmButton}> เลือกสถานที่นี้ </Text>
-                    </TouchableOpacity>
+                    <CustomButton
+                        title = "Choose This Course"
+                        onPress = {this.goBackHome}
+                    />
                  </View>
             </View>
         )
@@ -97,24 +98,23 @@ const styles = StyleSheet.create({
 
     },
     hole : { 
-        //marginLeft : 1 , 
         marginBottom : 5 ,
         marginTop : 10, 
         padding : 6,
-        backgroundColor : '#d6ff00',
+        backgroundColor : '#000000',
         fontWeight : 'bold',
         fontSize : 20, 
         borderRadius : 2,
-        width : 40,
-        textAlign : 'center'
+        width : 60,
+        textAlign : 'center',
+        color : "#ffffff"
     },
 
     hole0 : { 
-      //  marginLeft : 1 , 
         marginBottom : 5 ,
         marginTop : 10, 
         padding : 6,
-        backgroundColor : '#d6ff00',
+        backgroundColor : '#000000',
         fontWeight : 'bold',
         fontSize : 20, 
         borderRadius : 2,
@@ -123,10 +123,8 @@ const styles = StyleSheet.create({
     },
 
     parhcp : { 
-      //  marginLeft : 1 , 
         marginBottom : 5 ,
         marginTop : 10, 
-       // borderWidth : 1,
         padding : 6,
         backgroundColor : '#ffffff',
         fontSize : 20, 
@@ -135,7 +133,6 @@ const styles = StyleSheet.create({
     },
 
     parhcp0 : { 
-       // marginLeft : 1 , 
         marginBottom : 5 ,
         marginTop : 10, 
         width : 60,

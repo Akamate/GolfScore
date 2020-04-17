@@ -111,7 +111,7 @@ class ManualScoreScreen extends React.Component {
           <View style = {styles.button}>
             <Button title = "< Back" onPress={()=>{this.goBackHome()}}/>
           </View>
-          <View style = {styles.textInput}>
+          <View style = {{alignItems : 'center'}}>
             <TextInput
               style = {{borderBottomWidth : 1,marginTop : 20, fontSize : 30,alignItems : 'center'}}
               autoCapitalize = "none"
