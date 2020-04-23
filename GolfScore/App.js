@@ -31,11 +31,11 @@ export default class App extends Component {
             <Provider store={store} styles={{ fontFamily: 'Avenir Next' }}>
                 <Router>
                     <Scene key="root">
-                        <Scene key="Home" component={Home} title="HOME" hideNavBar={true} type={ActionConst.REPLACE} initial={true} />
+                        <Scene key="Home" component={Home} title="HOME" hideNavBar={true} type={ActionConst.PUSH} initial={true} />
                         <Scene key="ManualScore" component={ManualScoreScreen} title="Manual" hideNavBar={true} type={ActionConst.PUSH} />
                         <Scene key="ScoreView" component={ScoreView} title="ScoreView" type={ActionConst.PUSH} hideNavBar={true} />
                         <Scene key="ScoreView2" component={ScoreView2} title="ScoreView2" type={ActionConst.PUSH} hideNavBar={true} />
-                        <Scene key="SearchScreen" component={SearchScreen} title="Search" type={ActionConst.PUSH} hideNavBar={true} />
+                        <Scene key="SearchScreen" component={SearchScreen} title="Search" type={ActionConst.PUSH_OR_POP} hideNavBar={true} />
                         <Scene key="CourseDetailScreen" component={CourseDetailScreen} title="CourseDetail" type={ActionConst.PUSH} hideNavBar={true} />
                         <Scene key="AddCourseScreen" component={AddCourseScreen} title="AddCourseScreen" type={ActionConst.PUSH} hideNavBar={true} />
                     </Scene>

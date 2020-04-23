@@ -10,6 +10,7 @@
     "lint": "eslint ."
   },
   "dependencies": {
+    "@react-native-community/netinfo": "^5.8.0",
     "@react-native-firebase/app": "^6.3.4",
     "@react-native-firebase/ml-vision": "^6.3.4",
     "axios": "^0.19.0",
@@ -17,10 +18,14 @@
     "native-base": "^2.13.8",
     "react": "16.9.0",
     "react-native": "0.61.5",
+    "react-native-actionsheet": "^2.4.2",
     "react-native-elements": "^1.2.7",
+    "react-native-fs": "^2.16.6",
     "react-native-image-crop-picker": "^0.28.0",
     "react-native-image-picker": "^1.1.0",
+    "react-native-opencv3": "^1.0.7",
     "react-native-router-flux": "^4.0.6",
+    "react-native-share": "^3.2.0",
     "react-redux": "^7.2.0",
     "redux": "^4.0.5"
   },

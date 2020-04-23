@@ -140,6 +140,7 @@ PODS:
   - GTMSessionFetcher/Core (1.3.1)
   - GTMSessionFetcher/Full (1.3.1):
     - GTMSessionFetcher/Core (= 1.3.1)
+  - libopencv-contrib (3.4.1)
   - nanopb (0.3.9011):
     - nanopb/decode (= 0.3.9011)
     - nanopb/encode (= 0.3.9011)
@@ -311,6 +312,8 @@ PODS:
   - React-jsinspector (0.61.5)
   - react-native-image-picker (1.1.0):
     - React
+  - react-native-netinfo (5.8.0):
+    - React
   - React-RCTActionSheet (0.61.5):
     - React-Core/RCTActionSheetHeaders (= 0.61.5)
   - React-RCTAnimation (0.61.5):
@@ -358,6 +361,8 @@ PODS:
     - Firebase/MLVisionTextModel (~> 6.13.0)
     - React
     - RNFBApp
+  - RNFS (2.16.6):
+    - React
   - RNImageCropPicker (0.28.0):
     - React-Core
     - React-RCTImage
@@ -367,6 +372,15 @@ PODS:
     - React-Core
     - React-RCTImage
     - RSKImageCropper
+  - RNOpencv3 (1.0.5):
+    - libopencv-contrib (~> 3.4.1)
+    - React
+    - RNOpencv3/CvCamera (= 1.0.5)
+  - RNOpencv3/CvCamera (1.0.5):
+    - libopencv-contrib (~> 3.4.1)
+    - React
+  - RNShare (3.2.0):
+    - React
   - RSKImageCropper (2.2.3)
   - Yoga (1.14.0)
 
@@ -390,6 +404,7 @@ DEPENDENCIES:
   - React-jsiexecutor (from `../node_modules/react-native/ReactCommon/jsiexecutor`)
   - React-jsinspector (from `../node_modules/react-native/ReactCommon/jsinspector`)
   - react-native-image-picker (from `../node_modules/react-native-image-picker`)
+  - "react-native-netinfo (from `../node_modules/@react-native-community/netinfo`)"
   - React-RCTActionSheet (from `../node_modules/react-native/Libraries/ActionSheetIOS`)
   - React-RCTAnimation (from `../node_modules/react-native/Libraries/NativeAnimation`)
   - React-RCTBlob (from `../node_modules/react-native/Libraries/Blob`)
@@ -403,7 +418,10 @@ DEPENDENCIES:
   - ReactCommon/turbomodule/core (from `../node_modules/react-native/ReactCommon`)
   - "RNFBApp (from `../node_modules/@react-native-firebase/app`)"
   - "RNFBMLVision (from `../node_modules/@react-native-firebase/ml-vision`)"
+  - RNFS (from `../node_modules/react-native-fs`)
   - RNImageCropPicker (from `../node_modules/react-native-image-crop-picker`)
+  - RNOpencv3 (from `../node_modules/react-native-opencv3/ios`)
+  - RNShare (from `../node_modules/react-native-share`)
   - Yoga (from `../node_modules/react-native/ReactCommon/yoga`)
 
 SPEC REPOS:
@@ -428,6 +446,7 @@ SPEC REPOS:
     - GoogleToolboxForMac
     - GoogleUtilities
     - GTMSessionFetcher
+    - libopencv-contrib
     - nanopb
     - Protobuf
     - RSKImageCropper
@@ -463,6 +482,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/ReactCommon/jsinspector"
   react-native-image-picker:
     :path: "../node_modules/react-native-image-picker"
+  react-native-netinfo:
+    :path: "../node_modules/@react-native-community/netinfo"
   React-RCTActionSheet:
     :path: "../node_modules/react-native/Libraries/ActionSheetIOS"
   React-RCTAnimation:
@@ -487,8 +508,14 @@ EXTERNAL SOURCES:
     :path: "../node_modules/@react-native-firebase/app"
   RNFBMLVision:
     :path: "../node_modules/@react-native-firebase/ml-vision"
+  RNFS:
+    :path: "../node_modules/react-native-fs"
   RNImageCropPicker:
     :path: "../node_modules/react-native-image-crop-picker"
+  RNOpencv3:
+    :path: "../node_modules/react-native-opencv3/ios"
+  RNShare:
+    :path: "../node_modules/react-native-share"
   Yoga:
     :path: "../node_modules/react-native/ReactCommon/yoga"
 
@@ -518,6 +545,7 @@ SPEC CHECKSUMS:
   GoogleToolboxForMac: 800648f8b3127618c1b59c7f97684427630c5ea3
   GoogleUtilities: ad0f3b691c67909d03a3327cc205222ab8f42e0e
   GTMSessionFetcher: cea130bbfe5a7edc8d06d3f0d17288c32ffe9925
+  libopencv-contrib: 01e8f05daf0e93e3f5fa395590fcf41ef312bef3
   nanopb: 18003b5e52dab79db540fe93fe9579f399bd1ccd
   Protobuf: 176220c526ad8bd09ab1fb40a978eac3fef665f7
   RCTRequired: b153add4da6e7dbc44aebf93f3cf4fcae392ddf1
@@ -530,6 +558,7 @@ SPEC CHECKSUMS:
   React-jsiexecutor: d5525f9ed5f782fdbacb64b9b01a43a9323d2386
   React-jsinspector: fa0ecc501688c3c4c34f28834a76302233e29dc0
   react-native-image-picker: 7a85cf7b0a53845f03ae52fb4592a2748ded069b
+  react-native-netinfo: b9650ab1b8b4362b3c455b1274e4bc48223cc957
   React-RCTActionSheet: 600b4d10e3aea0913b5a92256d2719c0cdd26d76
   React-RCTAnimation: 791a87558389c80908ed06cc5dfc5e7920dfa360
   React-RCTBlob: d89293cc0236d9cb0933d85e430b0bbe81ad1d72
@@ -542,7 +571,10 @@ SPEC CHECKSUMS:
   ReactCommon: 198c7c8d3591f975e5431bec1b0b3b581aa1c5dd
   RNFBApp: 7d4006751de8bb5cafa2e8d2e7d94ee250df81db
   RNFBMLVision: 352b94db5c5521c222217bfdb4d3f43ab0b2f9ea
+  RNFS: 2bd9eb49dc82fa9676382f0585b992c424cd59df
   RNImageCropPicker: cf129d17e042ce3e96fb9ada967c28f21f977c82
+  RNOpencv3: 69fd83bb21ee01f5d5182b099a0b26610195d5df
+  RNShare: 13f1b72aab353c3092b30dce99d212871bb2a8a1
   RSKImageCropper: a446db0e8444a036b34f3c43db01b2373baa4b2a
   Yoga: f2a7cd4280bfe2cca5a7aed98ba0eb3d1310f18b
 

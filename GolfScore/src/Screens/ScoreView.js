@@ -2,18 +2,7 @@ import React, { Component } from 'react'
 import ImagePicker from 'react-native-image-picker'
 import { Actions } from 'react-native-router-flux'
 import googleAPI from '../api/googleApi'
-import {
-    SafeAreaView,
-    StyleSheet,
-    ActivityIndicator,
-    View,
-    Text,
-    TextInput,
-    Button,
-    ScrollView,
-    FlatList,
-    TouchableOpacity
-} from 'react-native'
+import { SafeAreaView, StyleSheet, ActivityIndicator, View, Text, TextInput, Button, ScrollView, FlatList, TouchableOpacity } from 'react-native'
 
 import { connect } from 'react-redux'
 import { Icon } from 'native-base'
@@ -116,10 +105,7 @@ class ScoreView extends Component {
             } else if (response.error) {
                 console.log('ImagePicker Error: ', response.error)
             } else if (response.customButton) {
-                console.log(
-                    'User tapped custom button: ',
-                    response.customButton
-                )
+                console.log('User tapped custom button: ', response.customButton)
             } else {
                 const source = { uri: response.uri }
 
@@ -152,9 +138,7 @@ class ScoreView extends Component {
     }
 
     removePlayer = key => {
-        var filteredData = this.state.score.filter(
-            item => item != this.state.score[key]
-        )
+        var filteredData = this.state.score.filter(item => item != this.state.score[key])
         for (i = 0; i < filteredData.length; i++) {
             filteredData[i].splice(0, 1)
             filteredData[i].splice(0, 0, `P${i + 1}`)
@@ -163,6 +147,7 @@ class ScoreView extends Component {
     }
 
     onEditingScore = (text, key, item) => {
+        console.log(300)
         const newArray = [...this.state.score]
         newArray[key][item] = text
         this.setState({ score: newArray })
@@ -170,16 +155,20 @@ class ScoreView extends Component {
 
     render() {
         return (
-            <ScrollView style={{ flex: 1, backgroundColor: 'white' }}>
-                <View style={styles.button}>
-                    <Button
-                        title="< Back"
-                        onPress={() => {
-                            Actions.reset('Home')
-                        }}
-                    />
+            <View style={{ flex: 1, backgroundColor: 'white' }}>
+                <View style={{ backgroundColor: '#44D362', height: 160 }}>
+                    <View style={styles.button}>
+                        <Button
+                            title="< Back"
+                            onPress={() => {
+                                Actions.reset('Home')
+                            }}
+                        />
+                    </View>
+                    <Text style={{ textAlign: 'center', fontSize: 30, color: 'white' }}>Score Card Page {this.state.isComplete ? 2 : 1}</Text>
                 </View>
-                <View style={{ backgroundColor: 'white' }}>
+
+                <View style={{ backgroundColor: 'white', borderRadius: 0, marginTop: -50 }}>
                     <ScoreLists
                         holes={this.state.holes}
                         hole={this.state.hole}
@@ -188,38 +177,23 @@ class ScoreView extends Component {
                         scores={this.state.score}
                         onEditingScore={this.onEditingScore}
                         removeable={true}
+                        editable={true}
                         removePlayer={this.removePlayer}
                     />
                     <View style={styles.buttonView}>
-                        <CustomButton
-                            title={
-                                this.state.isComplete
-                                    ? 'Calculate Score'
-                                    : 'Scan Next Page'
-                            }
-                            onPress={this.onPressButton}
-                        />
-                        {!this.state.isComplete && (
-                            <CustomButton
-                                title={'Calculate Score'}
-                                onPress={this.goCalculateScoreView}
-                            />
-                        )}
+                        <CustomButton title={this.state.isComplete ? 'Calculate Score' : 'Scan Next Page'} onPress={this.onPressButton} />
+                        {!this.state.isComplete && <CustomButton title={'Calculate Score'} onPress={this.goCalculateScoreView} />}
                     </View>
                 </View>
+
                 <View style={styles.indicatorView}>
                     {this.state.showIndicator && (
                         <View style={styles.indicatorContainer}>
-                            <ActivityIndicator
-                                size="large"
-                                color="#FFFFFF"
-                                animating={this.state.showIndicator}
-                                style={{ justifyContent: 'center' }}
-                            />
+                            <ActivityIndicator size="large" color="#FFFFFF" animating={this.state.showIndicator} style={{ justifyContent: 'center' }} />
                         </View>
                     )}
                 </View>
-            </ScrollView>
+            </View>
         )
     }
 }

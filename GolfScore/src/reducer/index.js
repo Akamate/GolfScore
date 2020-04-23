@@ -1,5 +1,5 @@
 const defaultStore = {
-    courseName: 'jhkjhj',
+    courseName: null,
     par: [],
     hcp: []
 }

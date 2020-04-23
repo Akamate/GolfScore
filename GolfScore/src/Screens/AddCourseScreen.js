@@ -1,10 +1,11 @@
 import React from 'react'
-import { View, Text, FlatList, StyleSheet, TouchableOpacity, Button, TextInput } from 'react-native'
+import { View, Text, FlatList, StyleSheet, TouchableOpacity, Button, TextInput, Platform } from 'react-native'
+import NetInfo from '@react-native-community/netinfo'
 import { Actions } from 'react-native-router-flux'
 import { connect } from 'react-redux'
 import { setCourseName, setPar, setHcp } from '../reducer/actions'
 import db from '../api/config'
-
+import Popup from '../Components/Popup'
 class AddCourseScreen extends React.Component {
     constructor(props) {
         super(props)
@@ -14,21 +15,32 @@ class AddCourseScreen extends React.Component {
             holes: [],
             numOfHoles: 18,
             courseName: '',
-            currentHole: 1
+            currentHole: 1,
+            isSuccess: false,
+            isConnected: true
         }
     }
 
     componentDidMount() {
-        this.setHoleArray()
+        this.initialHoleArray()
+        //     this.CheckConnectivity()
     }
 
-    setHoleArray = () => {
+    initialHoleArray = () => {
         var allHoles = []
         for (i = 0; i <= this.state.numOfHoles; i++) {
             allHoles.push({ key: i, holesNumber: i })
         }
         this.setState({ holes: allHoles }, () => {
-            this.setParHcp()
+            this.initialParHcp()
+        })
+    }
+
+    CheckConnectivity = () => {
+        // For Android devices
+        NetInfo.fetch().then(state => {
+            console.log(state)
+            this.setState({ isConnected: state.isConnected })
         })
     }
 
@@ -42,7 +54,7 @@ class AddCourseScreen extends React.Component {
         })
     }
 
-    setParHcp() {
+    initialParHcp() {
         const par = []
         const hcp = []
         for (i = 0; i <= this.state.numOfHoles; i++) {
@@ -83,7 +95,10 @@ class AddCourseScreen extends React.Component {
                     this.props.setCourseName(this.state.courseName)
                     this.props.setPar(this.state.par)
                     this.props.setHcp(this.state.hcp)
-                    Actions.reset('HOME')
+                    this.setState({
+                        isSuccess: true
+                    })
+                    //Actions.reset('Home')
                 })
                 .catch(error => {
                     console.log('error ', error)
@@ -95,16 +110,38 @@ class AddCourseScreen extends React.Component {
         Actions.pop()
     }
 
+    goHome = () => {
+        Actions.reset('Home')
+    }
+
     render() {
         return (
             <View style={styles.container}>
-                <View style={styles.button}>
-                    <Button
-                        title="< Back"
-                        onPress={() => {
-                            this.goSearchScreen()
-                        }}
+                {this.state.isSuccess && (
+                    <Popup
+                        type="Success"
+                        title="Add Course complete"
+                        button={true}
+                        textBody="Congrats! Your course successfully added"
+                        buttontext="GO HOME"
+                        callback={this.goHome}
                     />
+                )}
+                {!this.state.isConnected && (
+                    <Popup
+                        type="Danger"
+                        title="Network Error"
+                        button={true}
+                        textBody="Please Check Your Network Connection"
+                        buttontext="GO BACK"
+                        callback={this.goSearchScreen}
+                    />
+                )}
+                <View style={{ backgroundColor: '#44D362', height: 120 }}>
+                    <View style={styles.button}>
+                        <Button title="< Back" onPress={this.goSearchScreen} />
+                    </View>
+                    <Text style={{ textAlign: 'center', fontSize: 30, color: 'white' }}>Add Golf Course</Text>
                 </View>
                 <View style={styles.textInput}>
                     <TextInput
@@ -117,7 +154,7 @@ class AddCourseScreen extends React.Component {
                         onEndEditing={this.onEndEditing}
                     />
                 </View>
-                {this.state.currentHole == 19 ? this.parhcpList() : this.editDetailComponent()}
+                {this.state.currentHole == this.state.numOfHoles + 1 ? this.parhcpList() : this.editDetailComponent()}
             </View>
         )
     }
@@ -224,24 +261,26 @@ const styles = StyleSheet.create({
         marginBottom: 5,
         marginTop: 10,
         padding: 6,
-        backgroundColor: '#d6ff00',
+        backgroundColor: '#44D362',
         fontWeight: 'bold',
         fontSize: 20,
         borderRadius: 2,
-        width: 40,
-        textAlign: 'center'
+        width: 50,
+        textAlign: 'center',
+        color: '#ffffff'
     },
 
     hole0: {
         marginBottom: 5,
         marginTop: 10,
         padding: 6,
-        backgroundColor: '#d6ff00',
+        backgroundColor: '#44D362',
+        color: '#ffffff',
         fontWeight: 'bold',
         fontSize: 20,
-        borderRadius: 2,
-        width: 80,
-        textAlign: 'center'
+        width: 100,
+        textAlign: 'center',
+        overflow: 'hidden'
     },
 
     parhcp: {
@@ -285,7 +324,7 @@ const styles = StyleSheet.create({
         borderRadius: 4,
         paddingHorizontal: 10,
         paddingVertical: 5,
-        backgroundColor: '#1870FF',
+        backgroundColor: '#44D362',
         marginTop: 50,
         width: 110,
         marginLeft: 10,
@@ -304,4 +343,7 @@ const mapDispatchToProps = dispatch => ({
     setHcp: hcp => dispatch(setHcp(hcp))
 })
 
-export default connect(mapDispatchToProps)(AddCourseScreen)
+export default connect(
+    null,
+    mapDispatchToProps
+)(AddCourseScreen)

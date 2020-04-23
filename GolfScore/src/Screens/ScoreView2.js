@@ -1,10 +1,18 @@
 import React, { Component } from 'react'
 import { Actions } from 'react-native-router-flux'
-import { StyleSheet, View, Text, TextInput, Button, FlatList, TouchableOpacity, ScrollView } from 'react-native'
-
+import { StyleSheet, View, Text, TouchableOpacity, ScrollView } from 'react-native'
+import CustomButton from '../Components/CustomButton'
 import ScoreLists from '../Components/ScoreLists'
-import { Icon } from 'native-base'
 import { connect } from 'react-redux'
+import Share from 'react-native-share'
+
+var RNFS = require('react-native-fs')
+const shareOptions = {
+    title: 'Share via',
+    message: 'some message',
+    url: 'some share url',
+    filename: 'test' // only for base64 file in Android
+}
 
 class ScoreView2 extends Component {
     constructor(props) {
@@ -26,7 +34,7 @@ class ScoreView2 extends Component {
     findHoles = () => {
         const holes = []
         let hole = 0
-        for (i = 0; i < 18; i++) {
+        for (i = 0; i <= 18; i++) {
             if (!isNaN(this.props.score[0][i]) && this.props.score[0][i] != '') {
                 hole += 1
             }
@@ -34,6 +42,7 @@ class ScoreView2 extends Component {
         for (i = 0; i <= hole + 1; i++) {
             holes.push(i)
         }
+        console.log(this.props.score)
         this.setState({ holes: holes })
     }
 
@@ -84,6 +93,79 @@ class ScoreView2 extends Component {
         } else return '#000000'
     }
 
+    exportCSV = () => {
+        var path = RNFS.DocumentDirectoryPath + '/test.csv'
+        var hole = 'Hole,'
+        var numOfhole = 1
+        var holeString = ''
+        var scores = ''
+        for (i = 0; i < this.state.score[0].length; i++) {
+            if (!isNaN(this.state.score[0][i]) && this.state.score[0][i] != '') {
+                holeString += `${numOfhole},`
+                numOfhole += 1
+            }
+        }
+        holeString += 'TOT\n'
+
+        var score = 0
+        for (i = 0; i < this.state.score.length; i++) {
+            score = 0
+            for (j = 0; j < this.state.score[i].length; j++) {
+                if (this.state.score[i][j] != '') {
+                    scores += `${this.state.score[i][j]},`
+                    if (!isNaN(this.state.score[i][j])) {
+                        score += parseInt(this.state.score[i][j])
+                        console.log(score)
+                    }
+                }
+            }
+            scores += `${score}`
+            scores += '\n'
+        }
+
+        var par = 'PAR,'
+        var hcp = 'HCP,'
+
+        for (i = 0; i < numOfhole; i++) {
+            par += `${this.props.par[i]},`
+            hcp += `${this.props.hcp[i]},`
+        }
+        par += '\n'
+        hcp += '\n'
+
+        // write the file
+        RNFS.writeFile(path, hole + holeString + scores + par + hcp, 'utf8')
+            .then(success => {
+                console.log('FILE WRITTEN!')
+                options = Platform.select({
+                    ios: {
+                        activityItemSources: [
+                            {
+                                placeholderItem: { type: 'url', content: `file://${path}` },
+                                item: {
+                                    default: { type: 'url', content: `file://${path}` }
+                                },
+                                subject: {
+                                    default: 'title',
+                                    airDrop: 'AirDrop'
+                                }
+                            }
+                        ]
+                    }
+                })
+                Share.open(options)
+                    .then(res => {
+                        console.log(res)
+                    })
+                    .catch(err => {
+                        err && console.log(err)
+                    })
+            })
+            .catch(err => {
+                console.log(err.message)
+            })
+    }
+
     render() {
         return (
             <ScrollView style={{ flex: 1, backgroundColor: 'white' }}>
@@ -98,14 +180,8 @@ class ScoreView2 extends Component {
                     ))}
                 </View>
                 <View style={styles.buttonView}>
-                    <TouchableOpacity
-                        style={styles.buttonTouchable}
-                        onPress={() => {
-                            Actions.reset('Home')
-                        }}
-                    >
-                        <Text style={styles.buttonText}>OK</Text>
-                    </TouchableOpacity>
+                    <CustomButton title="OK" onPress={() => Actions.reset('Home')} />
+                    <CustomButton title="Export as CSV" onPress={this.exportCSV} />
                 </View>
             </ScrollView>
         )
@@ -157,4 +233,7 @@ const mapStateToProps = state => ({
     hcp: state.hcp
 })
 
-export default connect(mapStateToProps)(ScoreView2)
+export default connect(
+    mapStateToProps,
+    null
+)(ScoreView2)

@@ -13,7 +13,6 @@ export default (ScoreLists = ({ holes, hole, par, hcp, scores, onEditingScore, e
 
     const totalScore = playerScore => {
         var score = 0
-        console.log(playerScore)
         for (var i = 0; i < playerScore.length; i++) {
             if (!isNaN(playerScore[i]) && playerScore[i] != '') score += parseInt(playerScore[i])
         }
@@ -45,10 +44,10 @@ export default (ScoreLists = ({ holes, hole, par, hcp, scores, onEditingScore, e
                                 borderRadius: 2,
                                 fontFamily: 'Avenir Next'
                             }}
-                            editable={editable}
+                            editable={true}
                             value={texts[holeNumber]}
                             onChangeText={text => onEditingScore(text, key, holeNumber)}
-                            keyboardType="number-pad"
+                            //  keyboardType="number-pad"
                         />
                         <Text
                             style={{
@@ -68,7 +67,7 @@ export default (ScoreLists = ({ holes, hole, par, hcp, scores, onEditingScore, e
                 return (
                     <View>
                         <Text style={styles.column0}>{totalScore(texts)}</Text>
-                        <Text style={{ marginLeft: 10, marginBottom: 10, padding: 3 }} />
+                        <Text style={{ marginLeft: 10, marginBottom: 12, padding: 3 }} />
                     </View>
                 )
             } else {
@@ -88,7 +87,7 @@ export default (ScoreLists = ({ holes, hole, par, hcp, scores, onEditingScore, e
 
     return (
         <FlatList
-            style={{ padding: 0, marginLeft: 10 }}
+            style={{ padding: 0, marginLeft: 10, marginRight: 10 }}
             horizontal
             howsHorizontalScrollIndicator={false}
             data={holes}
@@ -115,7 +114,7 @@ export default (ScoreLists = ({ holes, hole, par, hcp, scores, onEditingScore, e
 
 const styles = StyleSheet.create({
     column0: {
-        marginLeft: 10,
+        textAlign: 'center',
         marginBottom: 3,
         borderWidth: 0,
         padding: 6,
@@ -127,26 +126,23 @@ const styles = StyleSheet.create({
     },
 
     row0: {
-        marginLeft: 0,
         marginBottom: 10,
         marginTop: 10,
         borderWidth: 0,
         padding: 6,
-        backgroundColor: '#323232',
+        backgroundColor: '#44D362',
         color: '#FFFFFF',
         fontWeight: 'bold',
         fontSize: 20,
-        borderRadius: 2,
         width: 60,
         textAlign: 'center'
     },
     parhcp: {
         marginBottom: 0,
         marginTop: 0,
-        backgroundColor: '#323232',
+        backgroundColor: '#44D362',
         padding: 6,
         fontSize: 20,
-        borderRadius: 2,
         textAlign: 'center',
         color: '#FFFFFF',
         fontWeight: 'bold',

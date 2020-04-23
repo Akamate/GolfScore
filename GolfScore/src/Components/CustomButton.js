@@ -12,10 +12,10 @@ export default (CustomButton = ({ title, onPress }) => {
 const styles = StyleSheet.create({
     buttonTouchable: {
         borderRadius: 30,
-        borderWidth: 2,
+        borderWidth: 0,
         paddingHorizontal: 60,
         paddingVertical: 15,
-        backgroundColor: '#000000',
+        backgroundColor: '#44D362',
         marginBottom: 20
     },
     buttonText: {

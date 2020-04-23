@@ -84,10 +84,10 @@ class SearchScreen extends React.Component {
                 }}
             >
                 <View style={styles.button}>
-                    <Button title="< Back" onPress={this.goBackHome()} />
+                    <Button title="< Back" onPress={this.goBackHome} />
                 </View>
                 <View style={styles.button1}>
-                    <Button title="ADD" onPress={this.addCourse()} />
+                    <Button title="ADD" onPress={this.addCourse} />
                 </View>
 
                 <View style={styles.background}>
@@ -102,7 +102,7 @@ class SearchScreen extends React.Component {
                     showsHorizontalScrollIndicator={false}
                     data={this.state.results}
                     renderItem={({ item, key }) => (
-                        <TouchableOpacity onPress={this.gotoCourseDetail(item.key)}>
+                        <TouchableOpacity onPress={() => this.gotoCourseDetail(item.key)}>
                             <Text style={styles.courseName}>{item.courseName}</Text>
                             <View
                                 style={{

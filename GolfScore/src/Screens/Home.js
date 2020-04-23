@@ -13,8 +13,10 @@ import { Icon } from 'native-base'
 import { connect } from 'react-redux'
 import ImagePicker from 'react-native-image-crop-picker'
 import CustomButton from '../Components/CustomButton'
-
+import ActionSheet from 'react-native-actionsheet'
+import Popup from '../Components/Popup'
 import { StyleSheet, ActivityIndicator, View, Text, ScrollView, FlatList, Image, TouchableOpacity } from 'react-native'
+
 const options = {
     title: 'Choose Avatar',
     storageOptions: {
@@ -29,14 +31,47 @@ class Home extends Component {
     constructor(props) {
         super(props)
         this.state = {
-            showIndicator: false
+            showIndicator: false,
+            isSelected: true
         }
     }
 
-    onPressScanButton = () => {
+    showActionSheet = () => {
+        if (this.props.courseName == null) {
+            this.setState({ isSelected: false })
+        } else {
+            this.ActionSheet.show()
+        }
+    }
+
+    onPressPicker = () => {
         //   Actions.ScoreView({texts: [['P1','1','2','3','4','4','3','5','4','4'],['P2','4','2','3','4','3','4','4','3','5'],['P3','1','3','3','4','5','6','4','5','3']]})
         //this.showImagePicker()
+
         ImagePicker.openPicker({
+            height: 210,
+            width: 500,
+            cropping: true,
+            includeBase64: true
+        }).then(image => {
+            this.setState({
+                showIndicator: true
+            })
+            googleAPI.postImage(image.data, (err, data) => {
+                console.log(data)
+                Actions.ScoreView({ texts: data })
+                this.setState({
+                    showIndicator: false
+                })
+            })
+        })
+    }
+
+    onPressCamera = () => {
+        //   Actions.ScoreView({texts: [['P1','1','2','3','4','4','3','5','4','4'],['P2','4','2','3','4','3','4','4','3','5'],['P3','1','3','3','4','5','6','4','5','3']]})
+        //this.showImagePicker()
+
+        ImagePicker.openCamera({
             height: 210,
             width: 500,
             cropping: true,
@@ -57,6 +92,11 @@ class Home extends Component {
 
     onPressManualButton = () => {
         //goTo ScoreView
+        // if (this.props.courseName == null) {
+        //     this.setState({ isSelected: false })
+        // } else {
+        //      Actions.ManualScore()
+        // }
         Actions.ScoreView({
             texts: [
                 ['P1', '1', '2', '3', '4', '4', '3', '5', '4', '4'],
@@ -73,30 +113,67 @@ class Home extends Component {
     render() {
         return (
             <View style={styles.container}>
-                <View style={{ marginTop: 50, alignItems: 'center' }}>
-                    <Text style={{ fontSize: 50, fontFamily: 'Avenir Next' }}>Golf Score</Text>
-                    <Text style={{ fontSize: 50, fontFamily: 'Avenir Next' }}>Reader</Text>
+                {!this.state.isSelected && (
+                    <Popup
+                        type="Danger"
+                        title="No Golf Course"
+                        button={true}
+                        textBody="Please Select Golf Course"
+                        buttontext="OKAY"
+                        callback={() => this.setState({ isSelected: true })}
+                    />
+                )}
+                <View style={{ backgroundColor: '#44D362', borderRadius: 20, marginTop: -15, height: 220 }}>
+                    <Text style={{ fontFamily: 'Avenir Next', fontSize: 50, marginTop: 40, color: 'white', textAlign: 'center' }}>Golf Score</Text>
+                    <Text
+                        style={{
+                            fontFamily: 'Avenir Next',
+                            fontSize: 50,
+                            marginTop: 0,
+                            marginBottom: 20,
+                            color: 'white',
+                            textAlign: 'center'
+                        }}
+                    >
+                        Reader
+                    </Text>
                 </View>
                 <View style={styles.courseView}>
-                    <Text style={styles.courseDetailText}>{this.props.courseName}</Text>
-                    <Text style={styles.courseDetailText}> Golf Course</Text>
-                    <View style={{ marginTop: 40 }}>
-                        <TouchableOpacity onPress={this.gotoSearchScreen}>
-                            <Text
-                                style={{
-                                    fontSize: 30,
-                                    color: '#0000FF',
-                                    fontFamily: 'Avenir Next'
-                                }}
-                            >
-                                Change Golf Course
-                            </Text>
-                        </TouchableOpacity>
-                    </View>
-                </View>
-                <View style={styles.buttonView}>
-                    <CustomButton title="Manually" onPress={() => Actions.ManualScore()} />
-                    <CustomButton title="Scan" onPress={this.onPressManualButton} />
+                    <Text style={{ fontSize: 30, marginBottom: 10, marginTop: 10, fontWeight: 'bold' }}>Golf Course</Text>
+                    <TouchableOpacity onPress={this.gotoSearchScreen} style={{ backgroundColor: '#F2F2F7', padding: 20, borderRadius: 8 }}>
+                        <Text style={{ fontWeight: 'bold', textAlign: 'center', fontSize: 25 }}>{this.props.courseName}</Text>
+                        <Text style={styles.courseDetailText}> Golf Course</Text>
+                        <Text
+                            style={{
+                                fontSize: 15,
+                                color: 'grey',
+                                textAlign: 'center',
+                                marginTop: 5
+                            }}
+                        >
+                            Tap to change golf course
+                        </Text>
+                    </TouchableOpacity>
+
+                    <Text style={{ fontSize: 30, fontFamily: 'Avenir Next', fontWeight: 'bold', marginTop: 20 }}>Score</Text>
+
+                    <TouchableOpacity onPress={() => Actions.ManualScore()} style={{ backgroundColor: '#F2F2F7', padding: 20, borderRadius: 8, marginTop: 10 }}>
+                        <Text style={{ fontSize: 20, textAlign: 'center', fontWeight: 'bold' }}> Enter Manually </Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={this.onPressManualButton} style={{ backgroundColor: '#F2F2F7', padding: 20, borderRadius: 8, marginTop: 10 }}>
+                        <Text style={{ fontSize: 20, textAlign: 'center', fontWeight: 'bold' }}> Scan Score Card </Text>
+                    </TouchableOpacity>
+
+                    <ActionSheet
+                        ref={o => (this.ActionSheet = o)}
+                        title={'Please Choose'}
+                        options={['Open Camera', 'Open Photo Gallery', 'Cancel']}
+                        cancelButtonIndex={2}
+                        onPress={index => {
+                            if (index === 0) this.onPressCamera()
+                            else if (index === 1) this.onPressPicker()
+                        }}
+                    />
                 </View>
                 <View style={styles.indicatorView}>
                     {this.state.showIndicator && (
@@ -138,10 +215,10 @@ class Home extends Component {
 
 const styles = StyleSheet.create({
     container: {
-        flex: 1,
+        // flex: 1,
         flexDirection: 'column',
-        backgroundColor: '#FFFFFF',
-        alignItems: 'center'
+        justifyContent: 'center'
+        //    alignItems: 'center'
     },
 
     bottom: {
@@ -160,7 +237,7 @@ const styles = StyleSheet.create({
         color: '#000000'
     },
     buttonView: {
-        marginTop: 20,
+        marginTop: 40,
         alignSelf: 'center',
         textAlign: 'center',
         justifyContent: 'center'
@@ -190,20 +267,21 @@ const styles = StyleSheet.create({
         alignItems: 'center'
     },
     courseView: {
-        alignItems: 'center',
-        marginTop: 30,
+        // alignItems: 'center',
+        marginTop: -20,
+        marginHorizontal: 10,
         padding: 20,
-        borderRadius: 40,
-        backgroundColor: '#FFFFFF',
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 5 },
-        shadowOpacity: 0.15
+        borderRadius: 30,
+        backgroundColor: '#ffffff'
+        // shadowColor: '#000',
+        // shadowOffset: { width: 0, height: 5 },
+        // shadowOpacity: 0.15
     },
     courseDetailText: {
         marginTop: 5,
-        fontSize: 40,
+        fontSize: 25,
         color: '#000000',
-        fontFamily: 'Avenir Next',
+        //  fontFamily: 'Avenir Next',
         textAlign: 'center'
     }
 })
