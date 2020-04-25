@@ -1,9 +1,9 @@
 import React from 'react'
 import { Text, StyleSheet, TouchableOpacity } from 'react-native'
 
-export default (CustomButton = ({ title, onPress }) => {
+export default (CustomButton = ({ title, onPress, disable }) => {
     return (
-        <TouchableOpacity style={styles.buttonTouchable} onPress={onPress}>
+        <TouchableOpacity style={[styles.buttonTouchable, { backgroundColor: disable ? '#323232' : '#44D362' }]} onPress={onPress} disabled={disable}>
             <Text style={styles.buttonText}>{title}</Text>
         </TouchableOpacity>
     )
@@ -21,7 +21,6 @@ const styles = StyleSheet.create({
     buttonText: {
         fontSize: 20,
         color: '#FFFFFF',
-        textAlign: 'center',
-        fontFamily: 'Avenir Next'
+        textAlign: 'center'
     }
 })

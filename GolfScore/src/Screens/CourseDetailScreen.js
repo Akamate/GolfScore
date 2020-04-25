@@ -48,9 +48,29 @@ class CourseDetailScreen extends React.Component {
 
     goBackHome = () => {
         this.props.setCourseName(this.state.courseName)
-        this.props.setPar(this.state.par)
+        //this.props.setPar(this.state.par)
+        this.setPar()
         this.props.setHcp(this.state.hcp)
         Actions.reset('Home')
+    }
+
+    setPar = () => {
+        par = this.state.par
+        sumFirst9Hole = 0
+        sumLast9Hole = 0
+        for (i = 0; i < 9; i++) {
+            if (!isNaN(par[i])) sumFirst9Hole += parseInt(par[i])
+        }
+        if (par.length > 9) {
+            for (i = 9; i < 18; i++) {
+                if (!isNaN(par[i])) sumLast9Hole += parseInt(par[i])
+            }
+            par.push(sumLast9Hole)
+            par.push(sumFirst9Hole + sumLast9Hole)
+        }
+        par.splice(9, 0, sumFirst9Hole)
+        console.log(par)
+        this.props.setPar(par)
     }
 
     goSearchScreen = () => {

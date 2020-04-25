@@ -372,10 +372,6 @@ PODS:
     - React-Core
     - React-RCTImage
     - RSKImageCropper
-  - RNOpencv3 (1.0.5):
-    - libopencv-contrib (~> 3.4.1)
-    - React
-    - RNOpencv3/CvCamera (= 1.0.5)
   - RNOpencv3/CvCamera (1.0.5):
     - libopencv-contrib (~> 3.4.1)
     - React
@@ -420,7 +416,7 @@ DEPENDENCIES:
   - "RNFBMLVision (from `../node_modules/@react-native-firebase/ml-vision`)"
   - RNFS (from `../node_modules/react-native-fs`)
   - RNImageCropPicker (from `../node_modules/react-native-image-crop-picker`)
-  - RNOpencv3 (from `../node_modules/react-native-opencv3/ios`)
+  - RNOpencv3/CvCamera (from `../node_modules/react-native-opencv3/ios`)
   - RNShare (from `../node_modules/react-native-share`)
   - Yoga (from `../node_modules/react-native/ReactCommon/yoga`)
 
@@ -578,6 +574,6 @@ SPEC CHECKSUMS:
   RSKImageCropper: a446db0e8444a036b34f3c43db01b2373baa4b2a
   Yoga: f2a7cd4280bfe2cca5a7aed98ba0eb3d1310f18b
 
-PODFILE CHECKSUM: 1ab7b5135aa2e94d2accd9b7259e95a5bdcb8f6e
+PODFILE CHECKSUM: 1f476cb9bed4303f54f5d6165457745bfb32ddb3
 
 COCOAPODS: 1.8.4

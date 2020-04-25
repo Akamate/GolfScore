@@ -11,13 +11,12 @@ class ManualScoreScreen extends React.Component {
             numOfHoles: 18,
             currentHole: 1,
             scores: [],
-            numOfPlayer: 0
+            numOfPlayer: 1
         }
     }
 
     componentDidMount() {
         this.setHoleArray()
-        this.firstTextInput.focus()
     }
 
     setHoleArray = () => {
@@ -34,10 +33,7 @@ class ManualScoreScreen extends React.Component {
         const scores = []
         for (i = 0; i < this.state.numOfPlayer; i++) {
             scores.push([])
-            for (j = 0; j <= this.state.numOfHoles; j++) {
-                if (j === 0) {
-                    scores[i].push(`P${i + 1}`)
-                }
+            for (j = 0; j < this.state.numOfHoles; j++) {
                 scores[i].push('')
             }
         }
@@ -55,7 +51,7 @@ class ManualScoreScreen extends React.Component {
 
     editScore = (text, index, holesNumber) => {
         const scores = [...this.state.scores]
-        scores[index][holesNumber] = text
+        scores[index][holesNumber - 1] = text
         this.setState({ scores: scores })
     }
 
@@ -64,12 +60,61 @@ class ManualScoreScreen extends React.Component {
     }
 
     goToCalculateScore = () => {
-        if (this.state.scores.length > 0) Actions.ScoreView2({ score: this.state.scores, holes: this.state.holes })
+        if (this.state.scores.length >= 0) {
+            scores = [['1', '2', '4', '5', '1', '2', '4', '', '', '', '', '', '', '', '', '', '', '']]
+            newScores = []
+            var sum = 0
+            scores.map((score, index) => {
+                sum0 = 0
+                sum1 = 0
+                len = 0
+                for (i = 0; i < 9; i++) {
+                    if (!isNaN(score[i]) && score[i] != '') {
+                        len += 1
+                        sum0 += parseInt(score[i])
+                    }
+                }
+
+                for (i = 9; i < this.state.numOfHoles; i++) {
+                    if (!isNaN(score[i]) && score[i] != '') {
+                        len += 1
+                        sum1 += parseInt(score[i])
+                    }
+                }
+                if (len < 10) {
+                    newScores.push(score.slice(0, 9))
+                    newScores[index].push(sum0)
+                } else {
+                    newScores.push(score.slice(0, 19))
+                    newScores[index].splice(9, 0, sum0)
+                    newScores[index].splice(19, 0, sum1)
+                }
+            })
+            console.log(scores)
+            console.log(newScores)
+            Actions.ScoreView2({ score: newScores, holes: this.state.holes })
+        }
+    }
+
+    increaseNumberPlayer = () => {
+        var numPlayer = this.state.numOfPlayer
+        this.setState({ numOfPlayer: numPlayer + 1 }, () => {
+            this.setScore()
+        })
+    }
+
+    decreaseNumberPlayer = () => {
+        var numPlayer = this.state.numOfPlayer
+        if (this.state.numOfPlayer > 1) {
+            this.setState({ numOfPlayer: numPlayer - 1 }, () => {
+                this.setScore()
+            })
+        }
     }
 
     editDetailComponent = () => {
         return (
-            <View style={{ marginTop: 30, alignItems: 'center' }}>
+            <View style={styles.editDetailContainer}>
                 <Text style={styles.hole0}>Hole {this.state.currentHole}</Text>
                 {this.state.scores.map((score, index) => {
                     return (
@@ -79,7 +124,7 @@ class ManualScoreScreen extends React.Component {
                                 autoCapitalize="none"
                                 autoCorrect={false}
                                 placeholder={'P' + (index + 1)}
-                                value={score[this.state.currentHole]}
+                                value={score[this.state.currentHole - 1]}
                                 onChangeText={text => this.editScore(text, index, this.state.currentHole)}
                                 keyboardType="number-pad"
                                 maxLength={1}
@@ -126,20 +171,17 @@ class ManualScoreScreen extends React.Component {
                 </View>
                 <View style={{ flexDirection: 'column', marginTop: 20, alignItems: 'center' }}>
                     <Text style={{ fontSize: 30, marginLeft: 20, fontWeight: 'bold' }}>Num Of Player</Text>
-                    <TextInput
-                        ref={input => {
-                            this.firstTextInput = input
-                        }}
-                        style={{ fontSize: 30, marginLeft: 20, width: 190, borderBottomWidth: 1, marginTop: 10, textAlign: 'center' }}
-                        autoCapitalize="none"
-                        autoCorrect={false}
-                        placeholder="Num Of Player"
-                        value={this.state.numOfPlayer}
-                        onChangeText={text => this.changeNumOfPlayer(text)}
-                        keyboardType="number-pad"
-                        maxLength={1}
-                        returnKeyType={'done'}
-                    />
+                    <View style={{ flexDirection: 'row', marginTop: 10 }}>
+                        <TouchableOpacity onPress={this.increaseNumberPlayer} style={{ borderWidth: 1, padding: 10, borderColor: 'blue', borderRadius: 4 }}>
+                            <Text style={{ fontSize: 30 }}>+</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity
+                            onPress={this.decreaseNumberPlayer}
+                            style={{ borderWidth: 1, padding: 12, borderColor: 'blue', borderRadius: 4, marginLeft: 10 }}
+                        >
+                            <Text style={{ fontSize: 30 }}>-</Text>
+                        </TouchableOpacity>
+                    </View>
                 </View>
                 {this.editDetailComponent()}
             </ScrollView>
@@ -203,6 +245,10 @@ const styles = StyleSheet.create({
     buttonText: {
         fontSize: 20,
         color: '#FFFFFF'
+    },
+    editDetailContainer: {
+        marginTop: 30,
+        alignItems: 'center'
     }
 })
 

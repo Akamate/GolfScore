@@ -30,13 +30,32 @@ class ScoreView extends Component {
             showIndicator: false,
             isComplete: false,
             holes: [],
-            hole: 0
+            hole: 0,
+            isEditing: false
         }
     }
     componentDidMount() {
+        this.findTotalScore()
         this.setState({
             holes: this.findHoles()
         })
+    }
+
+    findTotalScore = () => {
+        const scores = [...this.state.score]
+        scores.map((score, index) => {
+            if (score.length > 9) {
+                sum = 0
+                for (i = 0; i < 9; i++) {
+                    if (score[i] != '') sum += parseInt(score[i])
+                }
+                score[score.length - 1] = sum
+            } else {
+                score.push(score.reduce((a, b) => a + b, 0))
+            }
+        })
+
+        this.setState({ score: scores })
     }
 
     findHoles() {
@@ -50,9 +69,10 @@ class ScoreView extends Component {
     onPressButton = () => {
         if (this.state.isComplete) {
             this.goCalculateScoreView(false)
-            console.log('1231321')
         }
         // else {
+        // TODO OPEN CAMERA OR GALLERORY
+
         this.setState(
             {
                 isComplete: true,
@@ -60,16 +80,17 @@ class ScoreView extends Component {
                 hole: 9
             },
             () => {
-                const data = [
-                    ['P1', '5', '2', '3', '4', '4', '3', '5', '4', '4'],
-                    ['P2', '4', '2', '3', '4', '3', '4', '4', '3', '5'],
-                    ['P3', '1', '3', '3', '4', '5', '6', '4', '5', '3']
-                ]
+                const data = [[5, 2, 3, 4, 4, 3, 5, 4, 4], [4, 2, 3, 4, 3, 4, 4, 3, 5], [1, 3, 3, 4, 5, 6, 4, 5, 3]]
 
-                this.setState({
-                    showIndicator: false,
-                    score: data
-                })
+                this.setState(
+                    {
+                        showIndicator: false,
+                        score: data
+                    },
+                    () => {
+                        this.findTotalScore()
+                    }
+                )
             }
         )
     }
@@ -85,7 +106,7 @@ class ScoreView extends Component {
                 var array = [...this.state.score1]
                 const array1 = [...this.state.score]
                 for (let i = 0; i < this.state.score.length; i++) {
-                    array[i] = array[i].concat(array1[i].splice(1))
+                    array[i] = array[i].concat(array1[i])
                 }
 
                 this.setState({ score: array }, () => {
@@ -98,29 +119,11 @@ class ScoreView extends Component {
         }
     }
 
-    showImagePicker = () => {
-        ImagePicker.showImagePicker(options, response => {
-            if (response.didCancel) {
-                console.log('User cancelled image picker')
-            } else if (response.error) {
-                console.log('ImagePicker Error: ', response.error)
-            } else if (response.customButton) {
-                console.log('User tapped custom button: ', response.customButton)
-            } else {
-                const source = { uri: response.uri }
-
-                this.callApi(response.data)
-            }
-        })
-    }
-
     callApi(data) {
         this.setState({
             showIndicator: true
         })
         googleAPI.postImage(data, (err, data) => {
-            console.log(data + '  page 2')
-
             this.setState({
                 score1: this.state.score
             })
@@ -139,36 +142,38 @@ class ScoreView extends Component {
 
     removePlayer = key => {
         var filteredData = this.state.score.filter(item => item != this.state.score[key])
-        for (i = 0; i < filteredData.length; i++) {
-            filteredData[i].splice(0, 1)
-            filteredData[i].splice(0, 0, `P${i + 1}`)
-        }
         this.setState({ score: filteredData })
     }
 
-    onEditingScore = (text, key, item) => {
-        console.log(300)
+    onEditingScore = (text, index, holeNumber) => {
         const newArray = [...this.state.score]
-        newArray[key][item] = text
-        this.setState({ score: newArray })
+        //console.log(newArray[index][holeNumber])
+        newArray[index][holeNumber] = text != '' ? parseInt(text) : ''
+        this.setState({ score: newArray }, () => {
+            if (text != '') this.findTotalScore()
+        })
     }
 
     render() {
         return (
-            <View style={{ flex: 1, backgroundColor: 'white' }}>
-                <View style={{ backgroundColor: '#44D362', height: 160 }}>
-                    <View style={styles.button}>
-                        <Button
-                            title="< Back"
-                            onPress={() => {
-                                Actions.reset('Home')
-                            }}
-                        />
-                    </View>
-                    <Text style={{ textAlign: 'center', fontSize: 30, color: 'white' }}>Score Card Page {this.state.isComplete ? 2 : 1}</Text>
+            <ScrollView style={{ flex: 1, backgroundColor: 'white' }}>
+                <View style={styles.button}>
+                    <Button
+                        title="< Back"
+                        onPress={() => {
+                            Actions.reset('Home')
+                        }}
+                    />
                 </View>
-
-                <View style={{ backgroundColor: 'white', borderRadius: 0, marginTop: -50 }}>
+                <View style={styles.buttonRight}>
+                    <Button
+                        title={this.state.isEditing ? 'Confirm' : 'Edit'}
+                        onPress={() => {
+                            this.setState({ isEditing: !this.state.isEditing })
+                        }}
+                    />
+                </View>
+                <View style={{ backgroundColor: 'white', borderRadius: 0, marginTop: -5 }}>
                     <ScoreLists
                         holes={this.state.holes}
                         hole={this.state.hole}
@@ -176,13 +181,20 @@ class ScoreView extends Component {
                         hcp={this.props.hcp}
                         scores={this.state.score}
                         onEditingScore={this.onEditingScore}
-                        removeable={true}
-                        editable={true}
+                        removeable={this.state.isEditing}
+                        editable={this.state.isEditing}
                         removePlayer={this.removePlayer}
+                        isComplete={false}
                     />
                     <View style={styles.buttonView}>
-                        <CustomButton title={this.state.isComplete ? 'Calculate Score' : 'Scan Next Page'} onPress={this.onPressButton} />
-                        {!this.state.isComplete && <CustomButton title={'Calculate Score'} onPress={this.goCalculateScoreView} />}
+                        <CustomButton
+                            title={this.state.isComplete ? 'Calculate Score' : 'Scan Next Page'}
+                            disable={this.state.isEditing}
+                            onPress={this.onPressButton}
+                        />
+                        {!this.state.isComplete && (
+                            <CustomButton title={'Calculate Score'} disable={this.state.isEditing} onPress={this.goCalculateScoreView} />
+                        )}
                     </View>
                 </View>
 
@@ -193,7 +205,7 @@ class ScoreView extends Component {
                         </View>
                     )}
                 </View>
-            </View>
+            </ScrollView>
         )
     }
 }
@@ -237,15 +249,19 @@ const styles = StyleSheet.create({
         fontFamily: 'Avenir Next'
     },
     buttonView: {
-        marginTop: 30,
+        marginTop: 10,
         alignSelf: 'center',
         textAlign: 'center',
         justifyContent: 'center'
     },
     button: {
         alignItems: 'flex-start',
-        marginLeft: 10,
         marginTop: 30
+    },
+    buttonRight: {
+        position: 'absolute',
+        top: 30,
+        right: 20
     },
     indicatorContainer: {
         position: 'absolute',
