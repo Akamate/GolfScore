@@ -6,27 +6,14 @@
  * @flow
  */
 import React, { Component } from 'react'
-//import ImagePicker from 'react-native-image-picker';
 import { Actions } from 'react-native-router-flux'
 import googleAPI from '../api/googleApi'
-import { Icon } from 'native-base'
 import { connect } from 'react-redux'
 import ImagePicker from 'react-native-image-crop-picker'
-import CustomButton from '../Components/CustomButton'
 import ActionSheet from 'react-native-actionsheet'
 import Popup from '../Components/Popup'
-import { StyleSheet, ActivityIndicator, View, Text, ScrollView, TouchableOpacity, Dimensions } from 'react-native'
-
-const options = {
-    title: 'Choose Avatar',
-    storageOptions: {
-        skipBackup: true,
-        path: 'images'
-    },
-    quality: 0.6,
-    tintColor: '#FFFFFF'
-}
-
+import { StyleSheet, ActivityIndicator, View, Text, ScrollView, TouchableOpacity, Dimensions, FlatList } from 'react-native'
+import MethodPopup from '../Components/MethodPopup'
 class Home extends Component {
     constructor(props) {
         super(props)
@@ -99,7 +86,7 @@ class Home extends Component {
         //      Actions.ManualScore()
         // }
         Actions.ScoreView({
-            texts: [[1, 2, 3, 4, 4, 3, 5, 4, 4], [4, 2, 3, 4, 3, 4, 4, 3, 5], [1, 3, 3, 4, 5, 6, 4, 5, 3]]
+            texts: [[5, 5, 4, 5, 3, 5, 8, 3, 4], [4, 2, 3, 4, 3, 4, 4, 3, 5], [1, 3, 3, 4, 5, 6, 4, 5, 3]]
         })
     }
 
@@ -152,7 +139,7 @@ class Home extends Component {
                         </Text>
                     </TouchableOpacity>
 
-                    <Text style={{ fontSize: 30, fontFamily: 'Avenir Next', fontWeight: 'bold', marginTop: 20 }}>Score</Text>
+                    <Text style={{ fontSize: 30, fontWeight: 'bold', marginTop: 20 }}>Score</Text>
 
                     <TouchableOpacity onPress={() => Actions.ManualScore()} style={styles.scoreButton}>
                         <Text style={styles.scoreText}> Enter Manually </Text>
@@ -160,7 +147,9 @@ class Home extends Component {
                     <TouchableOpacity onPress={this.onPressManualButton} style={styles.scoreButton}>
                         <Text style={styles.scoreText}> Scan Score Card </Text>
                     </TouchableOpacity>
-
+                    <TouchableOpacity onPress={this.onPressManualButton} style={styles.scoreButton}>
+                        <Text style={styles.scoreText}> Select Calculate Method </Text>
+                    </TouchableOpacity>
                     <ActionSheet
                         ref={o => (this.ActionSheet = o)}
                         title={'Please Choose'}
@@ -181,6 +170,7 @@ class Home extends Component {
                 {this.state.showIndicator && (
                     <View style={{ backgroundColor: 'rgba(0,0,0, 0.6)', position: 'absolute', left: 0, top: 0, right: 0, bottom: 0 }} />
                 )}
+                <MethodPopup />
             </View>
         )
     }
@@ -255,6 +245,18 @@ const styles = StyleSheet.create({
         left: Dimensions.get('window').width / 2 - 50,
         zIndex: 5
     },
+    popupContainer: {
+        position: 'absolute',
+        width: 300,
+        height: 400,
+        alignItems: 'center',
+        justifyContent: 'center',
+        borderRadius: 10,
+        backgroundColor: '#ffffff',
+        opacity: 1,
+        zIndex: 5,
+        alignSelf: 'center'
+    },
     image: {
         height: 300,
         width: 250
@@ -280,7 +282,6 @@ const styles = StyleSheet.create({
         marginTop: 5,
         fontSize: 25,
         color: '#000000',
-        //  fontFamily: 'Avenir Next',
         textAlign: 'center'
     },
     scoreText: {
@@ -293,6 +294,12 @@ const styles = StyleSheet.create({
         padding: 20,
         borderRadius: 8,
         marginTop: 10
+    },
+    methodText: {
+        marginTop: 5,
+        fontSize: 25,
+        color: '#000000',
+        textAlign: 'center'
     }
 })
 

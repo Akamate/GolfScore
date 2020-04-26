@@ -1,11 +1,13 @@
 import React from 'react'
-import { View, Text, FlatList, StyleSheet, TouchableOpacity, Button, TextInput, Platform } from 'react-native'
+import { View, Text, StyleSheet, TouchableOpacity, Button, TextInput, Platform } from 'react-native'
 import NetInfo from '@react-native-community/netinfo'
 import { Actions } from 'react-native-router-flux'
 import { connect } from 'react-redux'
 import { setCourseName, setPar, setHcp } from '../reducer/actions'
 import db from '../api/config'
 import Popup from '../Components/Popup'
+import CustomButton from '../Components/CustomButton'
+import ParHcpLists from '../Components/ParHcpList'
 class AddCourseScreen extends React.Component {
     constructor(props) {
         super(props)
@@ -17,18 +19,20 @@ class AddCourseScreen extends React.Component {
             courseName: '',
             currentHole: 1,
             isSuccess: false,
-            isConnected: true
+            isConnected: true,
+            isComplete: false,
+            isDisabledButton: true
         }
     }
 
     componentDidMount() {
         this.initialHoleArray()
-        //     this.CheckConnectivity()
+        this.CheckConnectivity()
     }
 
     initialHoleArray = () => {
         var allHoles = []
-        for (i = 0; i <= this.state.numOfHoles; i++) {
+        for (i = 0; i < this.state.numOfHoles; i++) {
             allHoles.push({ key: i, holesNumber: i })
         }
         this.setState({ holes: allHoles }, () => {
@@ -37,21 +41,13 @@ class AddCourseScreen extends React.Component {
     }
 
     CheckConnectivity = () => {
-        // For Android devices
         NetInfo.fetch().then(state => {
-            console.log(state)
             this.setState({ isConnected: state.isConnected })
         })
     }
 
     onChangeCourseName = text => {
         this.setState({ courseName: text })
-    }
-
-    onChangeNumOfHoles = numOfHoles => {
-        this.setState({ numOfHoles: parseInt(numOfHoles) }, () => {
-            this.setHoleArray()
-        })
     }
 
     initialParHcp() {
@@ -71,15 +67,18 @@ class AddCourseScreen extends React.Component {
         const par = [...this.state.par]
         par[holesNumber] = text
         this.setState({ par: par })
+        this.setState({ isDisabledButton: text == '' || this.state.hcp[holesNumber] == '' ? true : false })
     }
 
     editHcp = (text, holesNumber) => {
         const hcp = [...this.state.hcp]
         hcp[holesNumber] = text
         this.setState({ hcp: hcp })
+        this.setState({ isDisabledButton: text == '' || this.state.par[holesNumber] == '' ? true : false })
     }
 
-    goBackHome() {
+    goBackHome = () => {
+        console.log('fdsfdsds')
         const courseName = this.state.courseName
         const par = this.state.par
         const hcp = this.state.hcp
@@ -92,9 +91,9 @@ class AddCourseScreen extends React.Component {
                     hcp
                 })
                 .then(data => {
-                    this.props.setCourseName(this.state.courseName)
-                    this.props.setPar(this.state.par)
-                    this.props.setHcp(this.state.hcp)
+                    this.props.setCourseName(courseName)
+                    this.props.setPar(par)
+                    this.props.setHcp(hcp)
                     this.setState({
                         isSuccess: true
                     })
@@ -154,7 +153,7 @@ class AddCourseScreen extends React.Component {
                         onEndEditing={this.onEndEditing}
                     />
                 </View>
-                {this.state.currentHole == this.state.numOfHoles + 1 ? this.parhcpList() : this.editDetailComponent()}
+                {this.state.isComplete ? this.parhcpList() : this.editDetailComponent()}
             </View>
         )
     }
@@ -162,55 +161,14 @@ class AddCourseScreen extends React.Component {
     parhcpList = () => {
         return (
             <View style={{ alignItems: 'center' }}>
-                <View style={{ height: 200 }}>
-                    <FlatList
-                        style={{ paddingTop: 10 }}
-                        horizontal
-                        showsHorizontalScrollIndicator={false}
-                        data={this.state.holes}
-                        renderItem={({ item, key }) => (
-                            <View>
-                                <Text style={item.holesNumber === 0 ? styles.hole0 : styles.hole}>{item.holesNumber === 0 ? 'Hole' : item.holesNumber}</Text>
-                                {item.holesNumber == 0 ? (
-                                    <View>
-                                        <Text style={styles.parhcp0}> Par</Text>
-                                        <Text style={styles.parhcp0}> Hcp</Text>
-                                    </View>
-                                ) : (
-                                    <View>
-                                        <TextInput
-                                            style={styles.parhcp}
-                                            autoCapitalize="none"
-                                            autoCorrect={false}
-                                            placeholder=""
-                                            value={this.state.par[item.holesNumber - 1]}
-                                            onChangeText={text => this.editPar(text, item.holesNumber - 1)}
-                                            editable={false}
-                                        />
-                                        <TextInput
-                                            style={styles.parhcp}
-                                            autoCapitalize="none"
-                                            autoCorrect={false}
-                                            placeholder=""
-                                            value={this.state.hcp[item.holesNumber - 1]}
-                                            onChangeText={text => this.editHcp(text, item.holesNumber - 1)}
-                                            editable={false}
-                                        />
-                                    </View>
-                                )}
-                            </View>
-                        )}
-                        keyExtractor={item => item.key}
-                    />
-                </View>
-                <TouchableOpacity onPress={() => this.goBackHome()} style={styles.buttonView}>
-                    <Text style={styles.confirmButton}> บันทึก </Text>
-                </TouchableOpacity>
+                <ParHcpLists par={this.state.par} hcp={this.state.hcp} />
+                <CustomButton title="SAVE COURSE" onPress={this.goBackHome} disable={!this.state.isComplete} />
             </View>
         )
     }
 
     editDetailComponent = () => {
+        isDisabledOKButton = this.state.courseName.length < 5 || this.state.par[0] == '' || this.state.hcp[0] == ''
         return (
             <View style={{ alignItems: 'center', marginTop: 30 }}>
                 <Text style={styles.hole0}>Hole {this.state.currentHole}</Text>
@@ -243,10 +201,23 @@ class AddCourseScreen extends React.Component {
                     >
                         <Text style={styles.changeHole}> Previous </Text>
                     </TouchableOpacity>
-                    <TouchableOpacity onPress={() => this.setState({ currentHole: this.state.currentHole + 1 })} style={styles.buttonView}>
+                    <TouchableOpacity
+                        onPress={() => this.setState({ currentHole: this.state.currentHole <= 17 ? this.state.currentHole + 1 : 18 })}
+                        style={[styles.buttonView, { backgroundColor: this.state.isDisabledButton ? '#323232' : '#44D362' }]}
+                        disabled={this.state.isDisabledButton}
+                    >
                         <Text style={styles.changeHole}> Next </Text>
                     </TouchableOpacity>
                 </View>
+                {!this.state.isComplete && (
+                    <TouchableOpacity
+                        onPress={() => this.setState({ isComplete: true })}
+                        style={[styles.buttonView, , { backgroundColor: isDisabledOKButton ? '#323232' : '#44D362' }]}
+                        disabled={isDisabledOKButton}
+                    >
+                        <Text style={styles.changeHole}> OK </Text>
+                    </TouchableOpacity>
+                )}
             </View>
         )
     }

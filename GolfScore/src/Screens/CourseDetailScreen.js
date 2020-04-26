@@ -4,7 +4,7 @@ import { Actions } from 'react-native-router-flux'
 import { connect } from 'react-redux'
 import { setCourseName, setPar, setHcp } from '../reducer/actions'
 import CustomButton from '../Components/CustomButton'
-
+import ParHcpLists from '../Components/ParHcpList'
 class CourseDetailScreen extends React.Component {
     constructor(props) {
         super(props)
@@ -87,28 +87,7 @@ class CourseDetailScreen extends React.Component {
                 </View>
 
                 <View style={{ alignItems: 'center' }}>
-                    <Text style={styles.title}> {this.props.courseName}</Text>
-                    <Text style={styles.holesNum}> {this.state.holes.length - 1} หลุม</Text>
-                    <View style={{ height: 200 }}>
-                        <FlatList
-                            style={{ paddingTop: 10 }}
-                            horizontal
-                            showsHorizontalScrollIndicator={false}
-                            data={this.state.holes}
-                            renderItem={({ item, key }) => (
-                                <View>
-                                    <Text style={styles.hole}>{item.holesNumber === 0 ? 'Hole' : item.holesNumber}</Text>
-                                    <Text style={item.holesNumber === 0 ? styles.parhcp0 : styles.parhcp}>
-                                        {item.holesNumber === 0 ? 'Par' : this.state.par[item.holesNumber - 1]}
-                                    </Text>
-                                    <Text style={item.holesNumber === 0 ? styles.parhcp0 : styles.parhcp}>
-                                        {item.holesNumber === 0 ? 'Hcp' : this.state.hcp[item.holesNumber - 1]}
-                                    </Text>
-                                </View>
-                            )}
-                            keyExtractor={item => item.key}
-                        />
-                    </View>
+                    <ParHcpLists par={this.state.par} hcp={this.state.hcp} />
                     <CustomButton title="Choose This Course" onPress={this.goBackHome} />
                 </View>
             </View>

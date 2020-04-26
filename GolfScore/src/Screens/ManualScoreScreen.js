@@ -61,7 +61,7 @@ class ManualScoreScreen extends React.Component {
 
     goToCalculateScore = () => {
         if (this.state.scores.length >= 0) {
-            scores = [['1', '2', '4', '5', '1', '2', '4', '', '', '', '', '', '', '', '', '', '', '']]
+            scores = [...this.state.scores]
             newScores = []
             var sum = 0
             scores.map((score, index) => {
@@ -90,8 +90,6 @@ class ManualScoreScreen extends React.Component {
                     newScores[index].splice(19, 0, sum1)
                 }
             })
-            console.log(scores)
-            console.log(newScores)
             Actions.ScoreView2({ score: newScores, holes: this.state.holes })
         }
     }

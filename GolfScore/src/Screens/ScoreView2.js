@@ -5,7 +5,7 @@ import CustomButton from '../Components/CustomButton'
 import ScoreLists from '../Components/ScoreLists'
 import { connect } from 'react-redux'
 import Share from 'react-native-share'
-import { system36Hcp } from '../CalculateMethod'
+import { system36Hcp, stableFord, doublePeoria, modifiedPeoria } from '../CalculateMethod'
 var RNFS = require('react-native-fs')
 const shareOptions = {
     title: 'Share via',
@@ -102,7 +102,7 @@ class ScoreView2 extends Component {
         // User Can Choose Methods
         // find h/c on stable ford
         //if(this.props.method == "System 36 Handicap")
-        const scores = system36Hcp(this.state.score, this.props.par)
+        const scores = modifiedPeoria(this.state.score, this.props.par, [3, 4, 6, 12, 13, 15])
         console.log(scores)
         this.setState({ score: scores })
     }
@@ -143,7 +143,6 @@ class ScoreView2 extends Component {
             }
             scores += '\n'
         }
-        console.log(hcp)
         par += '\n'
         hcp += '\n'
 
