@@ -4,6 +4,15 @@ import { Actions } from 'react-native-router-flux'
 import { Icon } from 'native-base'
 
 export default (MethodPopup = () => {
+    //stroke play -> h/c
+    //double prnoria -> random 6 hole each 9 hole -> can select when score 18 hole
+    //modieid penoria same with penoria
+    const selectMethod = methodName => {
+        if (methodName == 'Stroke Play') {
+            isStrokePlay = true
+        }
+    }
+
     return (
         <View style={{ backgroundColor: 'rgba(0,0,0, 0.6)', position: 'absolute', left: 0, top: 0, right: 0, bottom: 0, justifyContent: 'center' }}>
             <View style={styles.popupContainer}>
