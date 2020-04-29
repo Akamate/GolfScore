@@ -2,26 +2,13 @@ import React, { Component } from 'react'
 import ImagePicker from 'react-native-image-picker'
 import { Actions } from 'react-native-router-flux'
 import googleAPI from '../api/googleApi'
-import { SafeAreaView, StyleSheet, ActivityIndicator, View, Text, TextInput, Button, ScrollView, FlatList, TouchableOpacity } from 'react-native'
+import { StyleSheet, ActivityIndicator, View, Button, ScrollView } from 'react-native'
 
 import { connect } from 'react-redux'
-import { Icon } from 'native-base'
 import ScoreLists from '../Components/ScoreLists'
 import CustomButton from '../Components/CustomButton'
-const options = {
-    title: 'Select Avatar',
-    storageOptions: {
-        skipBackup: true,
-        path: 'images'
-    },
-    quality: 0.4,
-    tintColor: '#000000'
-}
 
 class ScoreView extends Component {
-    //holes -> [0 ,1,2,3,4,5,6,7,8,9, 10 , 11]
-    //          title                  total deleteIcon
-    //score
     constructor(props) {
         super(props)
         this.state = {
@@ -51,7 +38,11 @@ class ScoreView extends Component {
                 }
                 score[score.length - 1] = sum
             } else {
-                score.push(score.reduce((a, b) => a + b, 0))
+                sum = 0
+                for (i = 0; i < 9; i++) {
+                    if (score[i] != '' && !isNaN(score[i])) sum += parseInt(score[i])
+                }
+                score.push(sum)
             }
         })
 
@@ -97,7 +88,7 @@ class ScoreView extends Component {
 
     goCalculateScoreView = isOnePage => {
         if (isOnePage) {
-            Actions.ScoreView2({
+            Actions.CalculateScoreScreen({
                 score: this.state.score,
                 holes: this.findHoles()
             })
@@ -110,7 +101,7 @@ class ScoreView extends Component {
                 }
 
                 this.setState({ score: array }, () => {
-                    Actions.ScoreView2({
+                    Actions.CalculateScoreScreen({
                         score: array,
                         holes: this.findHoles()
                     })
@@ -147,7 +138,7 @@ class ScoreView extends Component {
 
     onEditingScore = (text, index, holeNumber) => {
         const newArray = [...this.state.score]
-        //console.log(newArray[index][holeNumber])
+        console.log(text, index, holeNumber)
         newArray[index][holeNumber] = text != '' ? parseInt(text) : ''
         this.setState({ score: newArray }, () => {
             if (text != '') this.findTotalScore()
@@ -193,7 +184,11 @@ class ScoreView extends Component {
                             onPress={this.onPressButton}
                         />
                         {!this.state.isComplete && (
-                            <CustomButton title={'Calculate Score'} disable={this.state.isEditing} onPress={this.goCalculateScoreView} />
+                            <CustomButton
+                                title={'Calculate Score'}
+                                disable={this.state.isEditing}
+                                onPress={this.goCalculateScoreView}
+                            />
                         )}
                     </View>
                 </View>
@@ -201,7 +196,12 @@ class ScoreView extends Component {
                 <View style={styles.indicatorView}>
                     {this.state.showIndicator && (
                         <View style={styles.indicatorContainer}>
-                            <ActivityIndicator size="large" color="#FFFFFF" animating={this.state.showIndicator} style={{ justifyContent: 'center' }} />
+                            <ActivityIndicator
+                                size="large"
+                                color="#FFFFFF"
+                                animating={this.state.showIndicator}
+                                style={{ justifyContent: 'center' }}
+                            />
                         </View>
                     )}
                 </View>

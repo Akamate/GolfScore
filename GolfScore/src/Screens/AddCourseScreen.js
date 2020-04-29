@@ -1,5 +1,5 @@
 import React from 'react'
-import { View, Text, StyleSheet, TouchableOpacity, Button, TextInput, Platform } from 'react-native'
+import { View, Text, StyleSheet, TouchableOpacity, Button, TextInput, Platform, ScrollView } from 'react-native'
 import NetInfo from '@react-native-community/netinfo'
 import { Actions } from 'react-native-router-flux'
 import { connect } from 'react-redux'
@@ -115,7 +115,7 @@ class AddCourseScreen extends React.Component {
 
     render() {
         return (
-            <View style={styles.container}>
+            <ScrollView style={styles.container}>
                 {this.state.isSuccess && (
                     <Popup
                         type="Success"
@@ -136,12 +136,11 @@ class AddCourseScreen extends React.Component {
                         callback={this.goSearchScreen}
                     />
                 )}
-                <View style={{ backgroundColor: '#44D362', height: 120 }}>
-                    <View style={styles.button}>
-                        <Button title="< Back" onPress={this.goSearchScreen} />
-                    </View>
-                    <Text style={{ textAlign: 'center', fontSize: 30, color: 'white' }}>Add Golf Course</Text>
+
+                <View style={styles.button}>
+                    <Button title="< Back" onPress={this.goSearchScreen} />
                 </View>
+
                 <View style={styles.textInput}>
                     <TextInput
                         style={{ borderBottomWidth: 1, marginTop: 20, fontSize: 30, alignItems: 'center' }}
@@ -154,7 +153,7 @@ class AddCourseScreen extends React.Component {
                     />
                 </View>
                 {this.state.isComplete ? this.parhcpList() : this.editDetailComponent()}
-            </View>
+            </ScrollView>
         )
     }
 
@@ -196,14 +195,23 @@ class AddCourseScreen extends React.Component {
                 />
                 <View style={{ flexDirection: 'row' }}>
                     <TouchableOpacity
-                        onPress={() => this.setState({ currentHole: this.state.currentHole >= 2 ? this.state.currentHole - 1 : 1 })}
+                        onPress={() =>
+                            this.setState({ currentHole: this.state.currentHole >= 2 ? this.state.currentHole - 1 : 1 })
+                        }
                         style={styles.buttonView}
                     >
                         <Text style={styles.changeHole}> Previous </Text>
                     </TouchableOpacity>
                     <TouchableOpacity
-                        onPress={() => this.setState({ currentHole: this.state.currentHole <= 17 ? this.state.currentHole + 1 : 18 })}
-                        style={[styles.buttonView, { backgroundColor: this.state.isDisabledButton ? '#323232' : '#44D362' }]}
+                        onPress={() =>
+                            this.setState({
+                                currentHole: this.state.currentHole <= 17 ? this.state.currentHole + 1 : 18
+                            })
+                        }
+                        style={[
+                            styles.buttonView,
+                            { backgroundColor: this.state.isDisabledButton ? '#323232' : '#44D362' }
+                        ]}
                         disabled={this.state.isDisabledButton}
                     >
                         <Text style={styles.changeHole}> Next </Text>
@@ -288,8 +296,7 @@ const styles = StyleSheet.create({
     },
     textInput: {
         alignItems: 'center',
-        fontSize: 30,
-        marginTop: 30
+        fontSize: 30
     },
     buttonView: {
         borderRadius: 4,

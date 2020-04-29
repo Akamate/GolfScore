@@ -3,7 +3,18 @@ import { View, Text, TextInput, StyleSheet, FlatList, TouchableOpacity } from 'r
 import { Actions } from 'react-native-router-flux'
 import { Icon } from 'native-base'
 
-export default (ScoreLists = ({ holes, hole, par, hcp, scores, onEditingScore, editable, removeable, removePlayer, isComplete, isPageOne }) => {
+export default (ScoreLists = ({
+    hole,
+    par,
+    hcp,
+    scores,
+    onEditingScore,
+    editable,
+    removeable,
+    removePlayer,
+    isComplete,
+    isPageOne
+}) => {
     editable = editable === undefined ? false : editable
     removeable = removeable === undefined ? false : removeable
     hole = hole === undefined ? 0 : hole
@@ -22,23 +33,14 @@ export default (ScoreLists = ({ holes, hole, par, hcp, scores, onEditingScore, e
 
     const holeElement = () => {
         element = []
-        if (isPageOne) {
-            for (i = 0; i < 9; i++) {
-                element.push(
-                    <View>
-                        <Text style={styles.row0}>{i + hole + 1}</Text>
-                    </View>
-                )
-            }
-        } else {
-            for (i = 0; i < 9; i++) {
-                element.push(
-                    <View>
-                        <Text style={styles.row0}>{i + 10}</Text>
-                    </View>
-                )
-            }
+        for (i = 0; i < 9; i++) {
+            element.push(
+                <View>
+                    <Text style={styles.row0}>{isPageOne ? i + hole + 1 : i + 10}</Text>
+                </View>
+            )
         }
+
         return element
     }
 
@@ -66,14 +68,8 @@ export default (ScoreLists = ({ holes, hole, par, hcp, scores, onEditingScore, e
 
     const hcpElement = () => {
         element = []
-        if (isPageOne) {
-            for (i = 0; i < 9; i++) {
-                element.push(<Text style={styles.row0}>{hcp[i + hole]}</Text>)
-            }
-        } else {
-            for (i = 0; i < 9; i++) {
-                element.push(<Text style={styles.row0}>{hcp[i + 9]}</Text>)
-            }
+        for (i = 0; i < 9; i++) {
+            element.push(<Text style={styles.row0}>{isPageOne ? hcp[i + hole] : hcp[i + 9]}</Text>)
         }
         return element
     }
@@ -81,8 +77,9 @@ export default (ScoreLists = ({ holes, hole, par, hcp, scores, onEditingScore, e
     const scoreElement = index => {
         element = []
         if (isPageOne) {
-            for (i = 0; i < 10; i++) {
-                holeNumber = 0
+            arr = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+            arr.map(i => {
+                y = 0
                 if (i < 9) {
                     element.push(
                         <View>
@@ -91,7 +88,7 @@ export default (ScoreLists = ({ holes, hole, par, hcp, scores, onEditingScore, e
                                 value={scores[index][i].toString()}
                                 returnKeyType="done"
                                 keyboardType="number-pad"
-                                onChangeText={text => onEditingScore(text, index, y)}
+                                onChangeText={text => onEditingScore(text, index, i)}
                                 editable={editable}
                             />
                             {/* <Text style={styles.column0}>{scores[index][i]}</Text> */}
@@ -100,11 +97,15 @@ export default (ScoreLists = ({ holes, hole, par, hcp, scores, onEditingScore, e
                             </Text>
                         </View>
                     )
-                    holeNumber += 1
                 } else {
-                    element.push(<Text style={[styles.totalScore, { backgroundColor: '#033922', color: '#ffffff' }]}>{scores[index][i]}</Text>)
+                    element.push(
+                        <Text style={[styles.totalScore, { backgroundColor: '#033922', color: '#ffffff' }]}>
+                            {scores[index][i]}
+                        </Text>
+                    )
                 }
-            }
+                y += 1
+            })
         } else {
             for (i = 0; i < 10; i++) {
                 if (i < 9) {
@@ -117,7 +118,11 @@ export default (ScoreLists = ({ holes, hole, par, hcp, scores, onEditingScore, e
                         </View>
                     )
                 } else {
-                    element.push(<Text style={[styles.totalScore, { backgroundColor: '#033922', color: '#ffffff' }]}>{scores[index][i + 10]}</Text>)
+                    element.push(
+                        <Text style={[styles.totalScore, { backgroundColor: '#033922', color: '#ffffff' }]}>
+                            {scores[index][i + 10]}
+                        </Text>
+                    )
                 }
             }
         }
@@ -127,16 +132,23 @@ export default (ScoreLists = ({ holes, hole, par, hcp, scores, onEditingScore, e
     return (
         <View style={{ alignItems: 'center' }}>
             <FlatList
-                style={{ padding: 10, marginLeft: 0, marginRight: 0, marginTop: 0, borderRadius: 10 }}
+                style={{ padding: 10, marginLeft: 0, marginRight: 10, marginTop: 0, borderRadius: 10 }}
                 horizontal
                 howsHorizontalScrollIndicator={true}
-                bounces={false}
+                bounces={true}
                 data={column}
                 renderItem={({ item, key }) => (
                     <View>
                         {item == 0 ? (
                             <View>
-                                <Text style={[styles.row0, { marginBottom: 0, borderTopEndRadius: 10, overflow: 'hidden' }]}>HOLE</Text>
+                                <Text
+                                    style={[
+                                        styles.row0,
+                                        { marginBottom: 0, borderTopEndRadius: 10, overflow: 'hidden' }
+                                    ]}
+                                >
+                                    HOLE
+                                </Text>
                                 {holeElement()}
                                 <Text style={styles.totalScore}>{isPageOne ? 'IN' : 'OUT'}</Text>
 
@@ -167,13 +179,23 @@ export default (ScoreLists = ({ holes, hole, par, hcp, scores, onEditingScore, e
                             <View>
                                 <Text style={styles.column0}>P{item - 2}</Text>
                                 {scoreElement(item - 3)}
-                                {scores[0].length >= 15 && <Text style={[styles.totalScore]}>{scores[item - 3][20]}</Text>}
+                                {scores[0].length >= 15 && (
+                                    <Text style={[styles.totalScore]}>{scores[item - 3][20]}</Text>
+                                )}
 
-                                {scores[0].length <= 13 && isComplete && <Text style={[styles.totalScore]}>{scores[item - 3][10]}</Text>}
-                                {scores[0].length >= 13 && isComplete && <Text style={[styles.totalScore]}>{scores[item - 3][21]}</Text>}
+                                {scores[0].length <= 13 && isComplete && (
+                                    <Text style={[styles.totalScore]}>{scores[item - 3][10]}</Text>
+                                )}
+                                {scores[0].length >= 13 && isComplete && (
+                                    <Text style={[styles.totalScore]}>{scores[item - 3][21]}</Text>
+                                )}
 
-                                {scores[0].length <= 13 && isComplete && <Text style={[styles.totalScore]}>{scores[item - 3][11]}</Text>}
-                                {scores[0].length >= 13 && isComplete && <Text style={[styles.totalScore]}>{scores[item - 3][22]}</Text>}
+                                {scores[0].length <= 13 && isComplete && (
+                                    <Text style={[styles.totalScore]}>{scores[item - 3][11]}</Text>
+                                )}
+                                {scores[0].length >= 13 && isComplete && (
+                                    <Text style={[styles.totalScore]}>{scores[item - 3][22]}</Text>
+                                )}
 
                                 {editable ? (
                                     <TouchableOpacity
@@ -182,7 +204,11 @@ export default (ScoreLists = ({ holes, hole, par, hcp, scores, onEditingScore, e
                                         }}
                                         style={{ marginLeft: 0, marginBottom: 0, padding: 6, alignItems: 'center' }}
                                     >
-                                        <Icon type="FontAwesome" name="remove" style={{ fontSize: 30, color: '#FF0000' }} />
+                                        <Icon
+                                            type="FontAwesome"
+                                            name="remove"
+                                            style={{ fontSize: 30, color: '#FF0000' }}
+                                        />
                                     </TouchableOpacity>
                                 ) : null}
                             </View>
@@ -247,5 +273,12 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         fontSize: 15,
         backgroundColor: '#44D362'
+    },
+    lists: {
+        padding: 10,
+        marginLeft: 0,
+        marginRight: 10,
+        marginTop: 0,
+        borderRadius: 10
     }
 })

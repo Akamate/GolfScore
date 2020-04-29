@@ -1,5 +1,5 @@
 import React from 'react'
-import { View, Text, FlatList, StyleSheet, TouchableOpacity, Button } from 'react-native'
+import { View, Text, FlatList, StyleSheet, TouchableOpacity, Button, ScrollView } from 'react-native'
 import { Actions } from 'react-native-router-flux'
 import { connect } from 'react-redux'
 import { setCourseName, setPar, setHcp } from '../reducer/actions'
@@ -55,9 +55,11 @@ class CourseDetailScreen extends React.Component {
     }
 
     setPar = () => {
-        par = this.state.par
-        sumFirst9Hole = 0
-        sumLast9Hole = 0
+        console.log('14141')
+        var par = this.state.par
+        console.log('141412')
+        var sumFirst9Hole = 0
+        var sumLast9Hole = 0
         for (i = 0; i < 9; i++) {
             if (!isNaN(par[i])) sumFirst9Hole += parseInt(par[i])
         }
@@ -78,19 +80,18 @@ class CourseDetailScreen extends React.Component {
     }
     render() {
         return (
-            <View style={styles.container}>
-                <View style={{ backgroundColor: '#44D362', height: 120 }}>
+            <ScrollView style={styles.container}>
+                <View style={{ backgroundColor: '#ffffff', height: 60 }}>
                     <View style={styles.button}>
                         <Button title="< Back" onPress={this.goSearchScreen} />
                     </View>
-                    <Text style={{ textAlign: 'center', fontSize: 30, color: 'white' }}>Golf Course Detail</Text>
                 </View>
 
                 <View style={{ alignItems: 'center' }}>
                     <ParHcpLists par={this.state.par} hcp={this.state.hcp} />
                     <CustomButton title="Choose This Course" onPress={this.goBackHome} />
                 </View>
-            </View>
+            </ScrollView>
         )
     }
 }

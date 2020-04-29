@@ -90,7 +90,7 @@ class ManualScoreScreen extends React.Component {
                     newScores[index].splice(19, 0, sum1)
                 }
             })
-            Actions.ScoreView2({ score: newScores, holes: this.state.holes })
+            Actions.CalculateScoreScreen({ score: newScores, holes: this.state.holes })
         }
     }
 
@@ -116,7 +116,9 @@ class ManualScoreScreen extends React.Component {
                 <Text style={styles.hole0}>Hole {this.state.currentHole}</Text>
                 {this.state.scores.map((score, index) => {
                     return (
-                        <View style={{ flexDirection: 'row', justifyContent: 'flex-start', marginTop: 10, marginLeft: 5 }}>
+                        <View
+                            style={{ flexDirection: 'row', justifyContent: 'flex-start', marginTop: 10, marginLeft: 5 }}
+                        >
                             <TextInput
                                 style={{ marginLeft: 60, fontSize: 30, alignItems: 'center', borderBottomWidth: 1 }}
                                 autoCapitalize="none"
@@ -134,19 +136,26 @@ class ManualScoreScreen extends React.Component {
                                     this.secondTextInput = input
                                 }}
                             />
-                            <Text style={{ fontSize: 30, position: 'absolute', marginLeft: 0 }}>{'P' + (index + 1)} </Text>
+                            <Text style={{ fontSize: 30, position: 'absolute', marginLeft: 0 }}>
+                                {'P' + (index + 1)}{' '}
+                            </Text>
                         </View>
                     )
                 })}
 
                 <View style={{ flexDirection: 'row' }}>
                     <TouchableOpacity
-                        onPress={() => this.setState({ currentHole: this.state.currentHole >= 2 ? this.state.currentHole - 1 : 1 })}
+                        onPress={() =>
+                            this.setState({ currentHole: this.state.currentHole >= 2 ? this.state.currentHole - 1 : 1 })
+                        }
                         style={styles.buttonView}
                     >
                         <Text style={styles.buttonText}> Previous </Text>
                     </TouchableOpacity>
-                    <TouchableOpacity onPress={() => this.setState({ currentHole: this.state.currentHole + 1 })} style={styles.buttonView}>
+                    <TouchableOpacity
+                        onPress={() => this.setState({ currentHole: this.state.currentHole + 1 })}
+                        style={styles.buttonView}
+                    >
                         <Text style={styles.buttonText}> Next </Text>
                     </TouchableOpacity>
                 </View>
@@ -165,17 +174,28 @@ class ManualScoreScreen extends React.Component {
                     <View style={styles.button}>
                         <Button title="< Back" onPress={this.goBackHome} />
                     </View>
-                    <Text style={{ textAlign: 'center', fontSize: 30, color: 'white', marginTop: 50, marginLeft: 10 }}>Manually Score</Text>
+                    <Text style={{ textAlign: 'center', fontSize: 30, color: 'white', marginTop: 50, marginLeft: 10 }}>
+                        Manually Score
+                    </Text>
                 </View>
                 <View style={{ flexDirection: 'column', marginTop: 20, alignItems: 'center' }}>
                     <Text style={{ fontSize: 30, marginLeft: 20, fontWeight: 'bold' }}>Num Of Player</Text>
                     <View style={{ flexDirection: 'row', marginTop: 10 }}>
-                        <TouchableOpacity onPress={this.increaseNumberPlayer} style={{ borderWidth: 1, padding: 10, borderColor: 'blue', borderRadius: 4 }}>
+                        <TouchableOpacity
+                            onPress={this.increaseNumberPlayer}
+                            style={{ borderWidth: 1, padding: 10, borderColor: 'blue', borderRadius: 4 }}
+                        >
                             <Text style={{ fontSize: 30 }}>+</Text>
                         </TouchableOpacity>
                         <TouchableOpacity
                             onPress={this.decreaseNumberPlayer}
-                            style={{ borderWidth: 1, padding: 12, borderColor: 'blue', borderRadius: 4, marginLeft: 10 }}
+                            style={{
+                                borderWidth: 1,
+                                padding: 12,
+                                borderColor: 'blue',
+                                borderRadius: 4,
+                                marginLeft: 10
+                            }}
                         >
                             <Text style={{ fontSize: 30 }}>-</Text>
                         </TouchableOpacity>

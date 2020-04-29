@@ -14,6 +14,7 @@ class SearchScreen extends React.Component {
     }
 
     componentDidMount() {
+        console.log(db)
         db.ref('/courseLists').on('value', querySnapShot => {
             let data = querySnapShot.val() ? querySnapShot.val() : {}
             console.log(data)

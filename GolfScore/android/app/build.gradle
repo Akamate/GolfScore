@@ -121,19 +121,29 @@ def enableHermes = project.ext.react.get("enableHermes", false);
 
 android {
     compileSdkVersion rootProject.ext.compileSdkVersion
-
+    buildToolsVersion rootProject.ext.buildToolsVersion
+    dexOptions { 
+        jumboMode true
+       }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
-
+     
     defaultConfig {
         applicationId "com.golfscore"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
         versionName "1.0"
+        renderscriptTargetApi rootProject.ext.renderscriptVersion
+        renderscriptSupportModeEnabled true
+        minSdkVersion 17
+        targetSdkVersion 28
+        multiDexEnabled true
     }
+    
+
     splits {
         abi {
             reset()
@@ -153,6 +163,7 @@ android {
     buildTypes {
         debug {
             signingConfig signingConfigs.debug
+            matchingFallbacks = ['debug']
         }
         release {
             // Caution! In production, you need to generate your own keystore file.
@@ -160,7 +171,9 @@ android {
             signingConfig signingConfigs.debug
             minifyEnabled enableProguardInReleaseBuilds
             proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
+            matchingFallbacks = ['release']
         }
+
     }
     // applicationVariants are e.g. debug, release
     applicationVariants.all { variant ->
@@ -182,8 +195,8 @@ dependencies {
     // project(':react-native-camera')
     implementation fileTree(dir: "libs", include: ["*.jar"])
     implementation "com.facebook.react:react-native:+"  // From node_modules
-    implementation project(':react-native-fs')
-    
+    implementation 'androidx.appcompat:appcompat:1.0.0'
+    implementation 'com.android.support:multidex:1.0.3'
     if (enableHermes) {
         def hermesPath = "../../node_modules/hermes-engine/android/";
         debugImplementation files(hermesPath + "hermes-debug.aar")

@@ -1,4 +1,3 @@
-import React, { Component } from 'react'
 import config from './../../config.json'
 class GoogleAPI {
     static postImage = async (data, callback) => {
@@ -68,7 +67,12 @@ class GoogleAPI {
             console.log(isComplete)
             console.log(count)
             console.log(countSpace)
-            if (!lines[i].includes('OUT') && !lines[i].includes('LAKE') && !lines[i].includes('RATING') && !lines[i].includes('SLOPE')) {
+            if (
+                !lines[i].includes('OUT') &&
+                !lines[i].includes('LAKE') &&
+                !lines[i].includes('RATING') &&
+                !lines[i].includes('SLOPE')
+            ) {
                 if (count >= 2 && words.length > 2 && words.length <= 12) {
                     var wordArr = lines[i].split(/[\s]+/)
                     if (!isNaN(wordArr[0])) {
@@ -91,7 +95,6 @@ class GoogleAPI {
                     for (k = 0; k < cleanTextArr.length; k++) {
                         text = text + cleanTextArr[k] + ' '
                     }
-                    // console.log(text)
 
                     if (text.length < 30) score.push(text.split(' '))
                 }
@@ -110,14 +113,23 @@ class GoogleAPI {
     static processTexts1 = lines => {
         var score = []
         for (i = 0; i < lines.length; i++) {
-            lines[i] = lines[i].toUpperCase()
-            lines[i] = lines[i].replace(/[a-zA-Z:-|/.-]/g, '')
+            lines[i] = lines[i].replace('a', '4')
+            lines[i] = lines[i].replace(/[a-zA-Z:-|/.-]/g, ' ')
             lines[i] = lines[i].replace('-', '')
             lines[i] = lines[i].replace('#', '')
             lines[i] = lines[i].split(' ')
-            if (parseInt(lines[i][0]) >= 10 && parseInt(lines[i][0]) < 20) {
-                lines[i][0] = lines[i][0].substring(1)
+            if (
+                isNaN(lines[i][lines[i].length - 1]) &&
+                parseInt(lines[i][lines[i].length - 1]) >= 10 &&
+                parseInt(lines[i][lines[i].length - 1]) <= 99
+            ) {
+                if (lines[i][lines[i].length - 1][2] == '1') {
+                    lines[i][lines[i].length - 1].splice(0)
+                }
             }
+            // if (parseInt(lines[i][0]) >= 10 && parseInt(lines[i][0][0]) == '1') {
+            //     lines[i][0] = lines[i][0].substring(1)
+            // }
             lines[i] = lines[i].join('')
             for (j = 0; j < lines[i].length; j++) {
                 lines[i] = lines[i].replace(' ', '1')
@@ -129,18 +141,17 @@ class GoogleAPI {
             }
             lines[i] = lines[i].replace(/[a-zA-Z:-|/. -]/g, '')
             lines[i] = lines[i].split('')
+            console.log(lines[i])
             if (lines[i].length >= 3) {
                 if (lines[i].length >= 10) {
-                    lines[i].pop()
+                    var endIndex = lines[i].length
+                    for (j = 0; j < endIndex - 9; j++) lines[i].pop()
                 }
+                var count = lines[i].length
+                for (j = 0; j < 9 - count; j++) lines[i].push('')
                 score.push(lines[i])
             }
         }
-
-        // for (i = 0; i < score.length; i++) {
-        //     score[i].splice(0, 0, `P${i + 1}`)
-        //     console.log(score[i])
-        // }
 
         return score
     }

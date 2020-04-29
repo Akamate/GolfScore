@@ -4,6 +4,13 @@ export const system36Hcp = (scores, par) => {
     const newScore = scores
     newScore.map((score, index) => {
         hcp = 0
+        if (score.length == 12) {
+            score.pop()
+            score.pop()
+        } else if (score.length == 23) {
+            score.pop()
+            score.pop()
+        }
         score.map((scoreAtHole, index) => {
             if (index != 9 && index < 19) {
                 if (scoreAtHole != '') {
@@ -33,12 +40,22 @@ export const system36Hcp = (scores, par) => {
 export const strokePlay = (scores, hcp) => {
     const newScore = scores
     newScore.map((score, index) => {
-        score.push(hcp)
+        if (score.length == 12) {
+            score.pop()
+            score.pop()
+        } else if (score.length == 23) {
+            score.pop()
+            score.pop()
+        }
         if (score.length > 13) {
             net = score[score.length - 1] - hcp
+            console.log(net)
+            console.log(score[score.length - 1])
+            console.log(hcp)
         } else {
             net = score[9] - hcp
         }
+        score.push(hcp)
         score.push(net)
     })
     return newScore
@@ -51,6 +68,13 @@ export const stableFord = (scores, par, hcp) => {
     newScore.map((score, index) => {
         hcpPlayer = 0
         net = 0
+        if (score.length == 12) {
+            score.pop()
+            score.pop()
+        } else if (score.length == 23) {
+            score.pop()
+            score.pop()
+        }
         score.map((scoreAtHole, index) => {
             if (index != 9 && index < 19) {
                 if (scoreAtHole != '') {
@@ -97,11 +121,18 @@ const calculatePoint = (scoreAtHole, parAtHole, hcpAtHole, hcp) => {
     return point
 }
 
-export const doublePeoria = (scores, par, holeLists) => {
+export const doublePeoria = (scores, holeLists) => {
     sum = 0
     newScore = scores
     newScore.map((score, index) => {
         sum = 0
+        if (score.length == 12) {
+            score.pop()
+            score.pop()
+        } else if (score.length == 23) {
+            score.pop()
+            score.pop()
+        }
         holeLists.map(holeNumber => {
             sum += parseInt(score[holeNumber > 8 ? holeNumber + 1 : holeNumber])
         })
@@ -119,6 +150,13 @@ export const modifiedPeoria = (scores, par, holeLists) => {
     newScore = scores
     newScore.map((score, index) => {
         sum = 0
+        if (score.length == 12) {
+            score.pop()
+            score.pop()
+        } else if (score.length == 23) {
+            score.pop()
+            score.pop()
+        }
         holeLists.map(holeNumber => {
             if (holeNumber >= 9) {
                 diff = parseInt(score[holeNumber + 1]) - parseInt(par[holeNumber + 1])

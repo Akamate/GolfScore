@@ -12,20 +12,33 @@ import { connect } from 'react-redux'
 import ImagePicker from 'react-native-image-crop-picker'
 import ActionSheet from 'react-native-actionsheet'
 import Popup from '../Components/Popup'
-import { StyleSheet, ActivityIndicator, View, Text, ScrollView, TouchableOpacity, Dimensions, FlatList } from 'react-native'
-import MethodPopup from '../Components/MethodPopup'
+import logo from './logo.png'
+import RNFS from 'react-native-fs'
+import {
+    Threshold,
+    Brightness,
+    Grayscale,
+    Invert,
+    Contrast,
+    cleanExtractedImagesCache
+} from 'react-native-image-filter-kit'
+import { StyleSheet, ActivityIndicator, View, Text, TouchableOpacity, Image, Dimensions } from 'react-native'
 class Home extends Component {
     constructor(props) {
         super(props)
         this.state = {
             showIndicator: false,
-            isSelected: true
+            isSelected: true,
+            imageUri: '',
+            imageUri1: '',
+            imgWidth: 0,
+            imageHeight: 0
         }
     }
 
     showActionSheet = () => {
         if (this.props.courseName == null) {
-            //this.setState({ isSelected: false })
+            // this.setState({ isSelected: false })
             this.ActionSheet.show()
         } else {
             this.ActionSheet.show()
@@ -33,9 +46,6 @@ class Home extends Component {
     }
 
     onPressPicker = () => {
-        //   Actions.ScoreView({texts: [['P1','1','2','3','4','4','3','5','4','4'],['P2','4','2','3','4','3','4','4','3','5'],['P3','1','3','3','4','5','6','4','5','3']]})
-        //this.showImagePicker()
-
         ImagePicker.openPicker({
             height: 210,
             width: 500,
@@ -55,38 +65,50 @@ class Home extends Component {
         })
     }
 
-    onPressCamera = () => {
-        //   Actions.ScoreView({texts: [['P1','1','2','3','4','4','3','5','4','4'],['P2','4','2','3','4','3','4','4','3','5'],['P3','1','3','3','4','5','6','4','5','3']]})
-        //this.showImagePicker()
+    imageScore = () => {
+        return (
+            <Threshold
+                image={
+                    <Image
+                        source={{ isStatic: true, uri: this.state.imageUri }}
+                        style={{ width: 500, height: 210 }}
+                        resizeMode={'contain'}
+                    />
+                }
+                amount={13}
+            />
+        )
+    }
 
+    onPressCamera = () => {
         ImagePicker.openCamera({
             height: 210,
             width: 500,
             cropping: true,
             includeBase64: true
         }).then(image => {
-            this.setState({
-                showIndicator: true
-            })
-            googleAPI.postImage(image.data, (err, data) => {
-                console.log(data)
-                Actions.ScoreView({ texts: data })
-                this.setState({
-                    showIndicator: false
-                })
-            })
+            console.log(image.path)
+            this.setState(
+                {
+                    showIndicator: true,
+                    imageUri: image.path
+                },
+                () => {
+                    // this.cap()
+                }
+            )
+            //  this.cap()
         })
     }
 
     onPressManualButton = () => {
-        //goTo ScoreView
-        // if (this.props.courseName == null) {
-        //     this.setState({ isSelected: false })
-        // } else {
-        //      Actions.ManualScore()
-        // }
         Actions.ScoreView({
-            texts: [[5, 5, 4, 5, 3, 5, 8, 3, 4], [4, 2, 3, 4, 3, 4, 4, 3, 5], [1, 3, 3, 4, 5, 6, 4, 5, 3]]
+            texts: [
+                [5, 5, 4, 5, 3, 5, 8, 3, 4],
+                [4, 2, 3, 4, 3, 4, 4, 3, 5],
+                [1, 3, 3, 4, 5, 6, 4, 5, 3],
+                [5, 5, 4, 5, 3, 5, 8, 3, 4]
+            ]
         })
     }
 
@@ -94,9 +116,55 @@ class Home extends Component {
         Actions.SearchScreen()
     }
 
+    base64 = async uri => {
+        var data = await RNFS.readFile(`file://${uri}`, 'base64').then(res => {
+            return res
+        })
+
+        googleAPI.postImage(data, (err, data) => {
+            console.log(data)
+            //  Actions.ScoreView({ texts: data })
+            this.setState({
+                showIndicator: false,
+                imageUri: ''
+            })
+        })
+    }
     render() {
         return (
             <View style={styles.container}>
+                {this.state.imageUri != '' && (
+                    <Grayscale
+                        image={
+                            <Contrast
+                                image={
+                                    <Image
+                                        source={{ uri: this.state.imageUri }}
+                                        style={{ width: 500, height: 210 }}
+                                        resizeMode={'contain'}
+                                        onLoad={this.cap}
+                                    />
+                                }
+                                amount={2}
+                            />
+                        }
+                        amount={1}
+                        onExtractImage={({ nativeEvent }) =>
+                            this.setState({ imageUri1: nativeEvent.uri }, () => {
+                                this.base64(nativeEvent.uri)
+                            })
+                        }
+                        extractImageEnabled={true}
+                    />
+                )}
+
+                {this.state.imageUri1 != '' && (
+                    <Image
+                        source={{ uri: this.state.imageUri1 }}
+                        style={{ width: 500, height: 210 }}
+                        resizeMode={'contain'}
+                    />
+                )}
                 {!this.state.isSelected && (
                     <Popup
                         type="Danger"
@@ -108,35 +176,22 @@ class Home extends Component {
                     />
                 )}
 
-                <Text style={{ fontFamily: 'Avenir Next', fontSize: 50, marginTop: 0, color: 'white', textAlign: 'center' }}>Golf Score</Text>
-                <Text
-                    style={{
-                        fontFamily: 'Avenir Next',
-                        fontSize: 50,
-                        marginTop: 0,
-                        marginBottom: 20,
-                        color: 'white',
-                        textAlign: 'center'
-                    }}
-                >
-                    Reader
-                </Text>
+                <Text style={styles.title}>Golf Score</Text>
+                <Text style={[styles.title, { marginBottom: 20 }]}>Reader</Text>
 
                 <View style={styles.courseView}>
-                    <Text style={{ fontSize: 30, marginBottom: 10, marginTop: 10, fontWeight: 'bold' }}>Golf Course</Text>
-                    <TouchableOpacity onPress={this.gotoSearchScreen} style={{ backgroundColor: '#F2F2F7', padding: 20, borderRadius: 8 }}>
-                        <Text style={{ fontWeight: 'bold', textAlign: 'center', fontSize: 25 }}>{this.props.courseName}</Text>
-                        <Text style={styles.courseDetailText}> Golf Course</Text>
-                        <Text
-                            style={{
-                                fontSize: 15,
-                                color: 'grey',
-                                textAlign: 'center',
-                                marginTop: 5
-                            }}
-                        >
-                            Tap to change golf course
+                    <Text style={{ fontSize: 30, marginBottom: 10, marginTop: 10, fontWeight: 'bold' }}>
+                        Golf Course
+                    </Text>
+                    <TouchableOpacity
+                        onPress={this.gotoSearchScreen}
+                        style={{ backgroundColor: '#F2F2F7', padding: 20, borderRadius: 8 }}
+                    >
+                        <Text style={{ fontWeight: 'bold', textAlign: 'center', fontSize: 25 }}>
+                            {this.props.courseName}
                         </Text>
+                        <Text style={styles.courseDetailText}> Golf Course</Text>
+                        <Text style={styles.changeGolfCourse}>Tap to change golf course</Text>
                     </TouchableOpacity>
 
                     <Text style={{ fontSize: 30, fontWeight: 'bold', marginTop: 20 }}>Score</Text>
@@ -144,11 +199,8 @@ class Home extends Component {
                     <TouchableOpacity onPress={() => Actions.ManualScore()} style={styles.scoreButton}>
                         <Text style={styles.scoreText}> Enter Manually </Text>
                     </TouchableOpacity>
-                    <TouchableOpacity onPress={this.onPressManualButton} style={styles.scoreButton}>
+                    <TouchableOpacity onPress={this.showActionSheet} style={styles.scoreButton}>
                         <Text style={styles.scoreText}> Scan Score Card </Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity onPress={this.onPressManualButton} style={styles.scoreButton}>
-                        <Text style={styles.scoreText}> Select Calculate Method </Text>
                     </TouchableOpacity>
                     <ActionSheet
                         ref={o => (this.ActionSheet = o)}
@@ -164,42 +216,18 @@ class Home extends Component {
 
                 {this.state.showIndicator && (
                     <View style={styles.indicatorContainer}>
-                        <ActivityIndicator size="large" color="#FFFFFF" animating={this.state.showIndicator} style={{ justifyContent: 'center' }} />
+                        <ActivityIndicator
+                            size="large"
+                            color="#FFFFFF"
+                            animating={this.state.showIndicator}
+                            style={{ justifyContent: 'center' }}
+                        />
                     </View>
                 )}
-                {this.state.showIndicator && (
-                    <View style={{ backgroundColor: 'rgba(0,0,0, 0.6)', position: 'absolute', left: 0, top: 0, right: 0, bottom: 0 }} />
-                )}
-                <MethodPopup />
+                {this.state.showIndicator && <View style={styles.modalView} />}
             </View>
         )
     }
-
-    // showImagePicker = () => {
-    //     ImagePicker.showImagePicker(options, (response) => {
-    //     if (response.didCancel) {
-    //         console.log('User cancelled image picker');
-    //     } else if (response.error) {
-    //         console.log('ImagePicker Error: ', response.error);
-    //     } else if (response.customButton) {
-    //         console.log('User tapped custom button: ', response.customButton);
-    //     } else {
-    //         const source = { uri: response.uri };
-
-    //         this.setState({
-    //             image: response,
-    //             showIndicator: true
-    //         });
-    // googleAPI.postImage(response.data,(err,data) => {
-    //         console.log(data)
-    //         this.setState({
-    //           showIndicator: false
-    //         })
-    //         Actions.ScoreView({texts: data})
-    //         })
-    //    }
-    //       });
-    // }
 }
 
 const styles = StyleSheet.create({
@@ -207,8 +235,8 @@ const styles = StyleSheet.create({
         flex: 1,
         flexDirection: 'column',
         justifyContent: 'center',
-        alignContent: 'center',
-        backgroundColor: '#44D362'
+        // alignContent: 'center',
+        backgroundColor: '#ffffff'
     },
 
     bottom: {
@@ -271,8 +299,7 @@ const styles = StyleSheet.create({
         left: 150
     },
     courseView: {
-        // alignItems: 'center',
-        marginTop: 20,
+        marginTop: -10,
         marginHorizontal: 10,
         padding: 20,
         borderRadius: 30,
@@ -300,6 +327,26 @@ const styles = StyleSheet.create({
         fontSize: 25,
         color: '#000000',
         textAlign: 'center'
+    },
+    title: {
+        fontSize: 50,
+        marginTop: 0,
+        color: 'white',
+        textAlign: 'center'
+    },
+    modalView: {
+        backgroundColor: 'rgba(0,0,0, 0.6)',
+        position: 'absolute',
+        left: 0,
+        top: 0,
+        right: 0,
+        bottom: 0
+    },
+    changeGolfCourse: {
+        fontSize: 15,
+        color: 'grey',
+        textAlign: 'center',
+        marginTop: 5
     }
 })
 
