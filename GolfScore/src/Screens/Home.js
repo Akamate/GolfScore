@@ -19,7 +19,10 @@ import {
     Brightness,
     Grayscale,
     Invert,
+    Sharpen,
     Contrast,
+    LuminanceToAlpha,
+    Normal,
     cleanExtractedImagesCache
 } from 'react-native-image-filter-kit'
 import { StyleSheet, ActivityIndicator, View, Text, TouchableOpacity, Image, Dimensions } from 'react-native'
@@ -47,17 +50,18 @@ class Home extends Component {
 
     onPressPicker = () => {
         ImagePicker.openPicker({
-            height: 210,
-            width: 500,
+            height: 230,
+            width: 550,
             cropping: true,
             includeBase64: true
         }).then(image => {
             this.setState({
                 showIndicator: true
+                // imageUri: image.path
             })
             googleAPI.postImage(image.data, (err, data) => {
                 console.log(data)
-                Actions.ScoreView({ texts: data })
+                //  Actions.ScoreView({ texts: data })
                 this.setState({
                     showIndicator: false
                 })
@@ -67,37 +71,60 @@ class Home extends Component {
 
     imageScore = () => {
         return (
-            <Threshold
+            <Normal
                 image={
-                    <Image
-                        source={{ isStatic: true, uri: this.state.imageUri }}
-                        style={{ width: 500, height: 210 }}
-                        resizeMode={'contain'}
+                    <Normal
+                        image={
+                            <Brightness
+                                image={
+                                    <Normal
+                                        image={
+                                            <Image
+                                                source={{ uri: this.state.imageUri }}
+                                                style={{ width: '100%', height: '100%' }}
+                                                resizeMode="stretch"
+                                            />
+                                        }
+                                    />
+                                }
+                                amount={1.3}
+                            />
+                        }
                     />
                 }
-                amount={13}
+                onExtractImage={({ nativeEvent }) =>
+                    this.setState({ imageUri1: nativeEvent.uri }, () => {
+                        this.base64(nativeEvent.uri)
+                    })
+                }
+                extractImageEnabled={true}
             />
         )
     }
 
     onPressCamera = () => {
         ImagePicker.openCamera({
-            height: 210,
-            width: 500,
+            height: 160,
+            width: Dimensions.get('window').width,
             cropping: true,
             includeBase64: true
         }).then(image => {
-            console.log(image.path)
+            console.log(image.width, image.height)
             this.setState(
                 {
                     showIndicator: true,
                     imageUri: image.path
                 },
-                () => {
-                    // this.cap()
-                }
+                () => {}
             )
-            //  this.cap()
+            // googleAPI.postImage(image.data, (err, data) => {
+            //     console.log(data)
+            //     Actions.ScoreView({ texts: data })
+            //     this.setState({
+            //         showIndicator: false,
+            //         imageUri: ''
+            //     })
+            //})
         })
     }
 
@@ -120,10 +147,10 @@ class Home extends Component {
         var data = await RNFS.readFile(`file://${uri}`, 'base64').then(res => {
             return res
         })
-
+        this.setState({ imageUri1: uri })
         googleAPI.postImage(data, (err, data) => {
             console.log(data)
-            //  Actions.ScoreView({ texts: data })
+            Actions.ScoreView({ texts: data })
             this.setState({
                 showIndicator: false,
                 imageUri: ''
@@ -133,37 +160,9 @@ class Home extends Component {
     render() {
         return (
             <View style={styles.container}>
-                {this.state.imageUri != '' && (
-                    <Grayscale
-                        image={
-                            <Contrast
-                                image={
-                                    <Image
-                                        source={{ uri: this.state.imageUri }}
-                                        style={{ width: 500, height: 210 }}
-                                        resizeMode={'contain'}
-                                        onLoad={this.cap}
-                                    />
-                                }
-                                amount={2}
-                            />
-                        }
-                        amount={1}
-                        onExtractImage={({ nativeEvent }) =>
-                            this.setState({ imageUri1: nativeEvent.uri }, () => {
-                                this.base64(nativeEvent.uri)
-                            })
-                        }
-                        extractImageEnabled={true}
-                    />
-                )}
-
+                {this.state.imageUri != '' && this.imageScore()}
                 {this.state.imageUri1 != '' && (
-                    <Image
-                        source={{ uri: this.state.imageUri1 }}
-                        style={{ width: 500, height: 210 }}
-                        resizeMode={'contain'}
-                    />
+                    <Image style={{ width: 500, height: 210 }} source={{ uri: this.state.imageUri1 }} />
                 )}
                 {!this.state.isSelected && (
                     <Popup
@@ -235,8 +234,8 @@ const styles = StyleSheet.create({
         flex: 1,
         flexDirection: 'column',
         justifyContent: 'center',
-        // alignContent: 'center',
-        backgroundColor: '#ffffff'
+        alignContent: 'center',
+        backgroundColor: '#44D362'
     },
 
     bottom: {

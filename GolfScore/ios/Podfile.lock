@@ -15,21 +15,6 @@ PODS:
     - FirebaseAnalytics (= 6.1.6)
   - Firebase/CoreOnly (6.13.0):
     - FirebaseCore (= 6.4.0)
-  - Firebase/MLVision (6.13.0):
-    - Firebase/CoreOnly
-    - FirebaseMLVision (~> 0.19.0)
-  - Firebase/MLVisionBarcodeModel (6.13.0):
-    - Firebase/CoreOnly
-    - FirebaseMLVisionBarcodeModel (~> 0.19.0)
-  - Firebase/MLVisionFaceModel (6.13.0):
-    - Firebase/CoreOnly
-    - FirebaseMLVisionFaceModel (~> 0.19.0)
-  - Firebase/MLVisionLabelModel (6.13.0):
-    - Firebase/CoreOnly
-    - FirebaseMLVisionLabelModel (~> 0.19.0)
-  - Firebase/MLVisionTextModel (6.13.0):
-    - Firebase/CoreOnly
-    - FirebaseMLVisionTextModel (~> 0.19.0)
   - FirebaseAnalytics (6.1.6):
     - FirebaseCore (~> 6.4)
     - FirebaseInstanceID (~> 4.2)
@@ -55,32 +40,6 @@ PODS:
     - FirebaseCore (~> 6.0)
     - GoogleUtilities/Environment (~> 6.0)
     - GoogleUtilities/UserDefaults (~> 6.0)
-  - FirebaseMLCommon (0.19.0):
-    - FirebaseCore (~> 6.3)
-    - FirebaseInstanceID (~> 4.2)
-    - GoogleToolboxForMac/Logger (~> 2.1)
-    - "GoogleToolboxForMac/NSData+zlib (~> 2.1)"
-    - "GoogleToolboxForMac/NSDictionary+URLArguments (~> 2.1)"
-    - GoogleUtilities/UserDefaults (~> 6.0)
-    - GTMSessionFetcher/Core (~> 1.1)
-    - Protobuf (~> 3.5)
-  - FirebaseMLVision (0.19.0):
-    - FirebaseCore (~> 6.3)
-    - FirebaseMLCommon (~> 0.19)
-    - GoogleAPIClientForREST/Core (~> 1.3)
-    - GoogleAPIClientForREST/Vision (~> 1.3)
-    - GoogleToolboxForMac/Logger (~> 2.1)
-    - "GoogleToolboxForMac/NSData+zlib (~> 2.1)"
-    - GTMSessionFetcher/Core (~> 1.1)
-    - Protobuf (~> 3.5)
-  - FirebaseMLVisionBarcodeModel (0.19.0):
-    - FirebaseMLVision (~> 0.19)
-  - FirebaseMLVisionFaceModel (0.19.0):
-    - FirebaseMLVision (~> 0.19)
-  - FirebaseMLVisionLabelModel (0.19.0):
-    - FirebaseMLVision (~> 0.19)
-  - FirebaseMLVisionTextModel (0.19.0):
-    - FirebaseMLVision (~> 0.19)
   - Folly (2018.10.22.00):
     - boost-for-react-native
     - DoubleConversion
@@ -91,11 +50,6 @@ PODS:
     - DoubleConversion
     - glog
   - glog (0.3.5)
-  - GoogleAPIClientForREST/Core (1.3.11):
-    - GTMSessionFetcher (>= 1.1.7)
-  - GoogleAPIClientForREST/Vision (1.3.11):
-    - GoogleAPIClientForREST/Core
-    - GTMSessionFetcher (>= 1.1.7)
   - GoogleAppMeasurement (6.1.6):
     - GoogleUtilities/AppDelegateSwizzler (~> 6.0)
     - GoogleUtilities/MethodSwizzler (~> 6.0)
@@ -106,18 +60,6 @@ PODS:
   - GoogleDataTransportCCTSupport (3.0.0):
     - GoogleDataTransport (~> 6.0)
     - nanopb (~> 0.3.901)
-  - GoogleToolboxForMac/DebugUtils (2.2.2):
-    - GoogleToolboxForMac/Defines (= 2.2.2)
-  - GoogleToolboxForMac/Defines (2.2.2)
-  - GoogleToolboxForMac/Logger (2.2.2):
-    - GoogleToolboxForMac/Defines (= 2.2.2)
-  - "GoogleToolboxForMac/NSData+zlib (2.2.2)":
-    - GoogleToolboxForMac/Defines (= 2.2.2)
-  - "GoogleToolboxForMac/NSDictionary+URLArguments (2.2.2)":
-    - GoogleToolboxForMac/DebugUtils (= 2.2.2)
-    - GoogleToolboxForMac/Defines (= 2.2.2)
-    - "GoogleToolboxForMac/NSString+URLArguments (= 2.2.2)"
-  - "GoogleToolboxForMac/NSString+URLArguments (2.2.2)"
   - GoogleUtilities/AppDelegateSwizzler (6.6.0):
     - GoogleUtilities/Environment
     - GoogleUtilities/Logger
@@ -137,18 +79,12 @@ PODS:
     - GoogleUtilities/Logger
   - GoogleUtilities/UserDefaults (6.6.0):
     - GoogleUtilities/Logger
-  - GTMSessionFetcher (1.3.1):
-    - GTMSessionFetcher/Full (= 1.3.1)
-  - GTMSessionFetcher/Core (1.3.1)
-  - GTMSessionFetcher/Full (1.3.1):
-    - GTMSessionFetcher/Core (= 1.3.1)
   - nanopb (0.3.9011):
     - nanopb/decode (= 0.3.9011)
     - nanopb/encode (= 0.3.9011)
   - nanopb/decode (0.3.9011)
   - nanopb/encode (0.3.9011)
   - PromisesObjC (1.2.8)
-  - Protobuf (3.11.4)
   - RCTRequired (0.61.5)
   - RCTTypeSafety (0.61.5):
     - FBLazyVector (= 0.61.5)
@@ -361,15 +297,6 @@ PODS:
   - RNFBApp (6.7.1):
     - Firebase/Core (~> 6.13.0)
     - React
-  - RNFBMLVision (6.7.1):
-    - Firebase/Core (~> 6.13.0)
-    - Firebase/MLVision (~> 6.13.0)
-    - Firebase/MLVisionBarcodeModel (~> 6.13.0)
-    - Firebase/MLVisionFaceModel (~> 6.13.0)
-    - Firebase/MLVisionLabelModel (~> 6.13.0)
-    - Firebase/MLVisionTextModel (~> 6.13.0)
-    - React
-    - RNFBApp
   - RNFS (2.16.6):
     - React
   - RNGestureHandler (1.6.1):
@@ -396,8 +323,6 @@ DEPENDENCIES:
   - DoubleConversion (from `../node_modules/react-native/third-party-podspecs/DoubleConversion.podspec`)
   - FBLazyVector (from `../node_modules/react-native/Libraries/FBLazyVector`)
   - FBReactNativeSpec (from `../node_modules/react-native/Libraries/FBReactNativeSpec`)
-  - Firebase/MLVision
-  - Firebase/MLVisionTextModel
   - Folly (from `../node_modules/react-native/third-party-podspecs/Folly.podspec`)
   - glog (from `../node_modules/react-native/third-party-podspecs/glog.podspec`)
   - RCTRequired (from `../node_modules/react-native/Libraries/RCTRequired`)
@@ -428,7 +353,6 @@ DEPENDENCIES:
   - ReactCommon/turbomodule/core (from `../node_modules/react-native/ReactCommon`)
   - RNDeviceInfo (from `../node_modules/react-native-device-info`)
   - "RNFBApp (from `../node_modules/@react-native-firebase/app`)"
-  - "RNFBMLVision (from `../node_modules/@react-native-firebase/ml-vision`)"
   - RNFS (from `../node_modules/react-native-fs`)
   - RNGestureHandler (from `../node_modules/react-native-gesture-handler`)
   - RNImageCropPicker (from `../node_modules/react-native-image-crop-picker`)
@@ -447,22 +371,12 @@ SPEC REPOS:
     - FirebaseCoreDiagnostics
     - FirebaseCoreDiagnosticsInterop
     - FirebaseInstanceID
-    - FirebaseMLCommon
-    - FirebaseMLVision
-    - FirebaseMLVisionBarcodeModel
-    - FirebaseMLVisionFaceModel
-    - FirebaseMLVisionLabelModel
-    - FirebaseMLVisionTextModel
-    - GoogleAPIClientForREST
     - GoogleAppMeasurement
     - GoogleDataTransport
     - GoogleDataTransportCCTSupport
-    - GoogleToolboxForMac
     - GoogleUtilities
-    - GTMSessionFetcher
     - nanopb
     - PromisesObjC
-    - Protobuf
     - RSKImageCropper
 
 EXTERNAL SOURCES:
@@ -526,8 +440,6 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-device-info"
   RNFBApp:
     :path: "../node_modules/@react-native-firebase/app"
-  RNFBMLVision:
-    :path: "../node_modules/@react-native-firebase/ml-vision"
   RNFS:
     :path: "../node_modules/react-native-fs"
   RNGestureHandler:
@@ -555,24 +467,14 @@ SPEC CHECKSUMS:
   FirebaseCoreDiagnostics: b59c024493a409f8aecba02c99928d0d8431d159
   FirebaseCoreDiagnosticsInterop: 296e2c5f5314500a850ad0b83e9e7c10b011a850
   FirebaseInstanceID: ebd2ea79ee38db0cb5f5167b17a0d387e1cc7b6e
-  FirebaseMLCommon: 074a67e05122b1c9f6401a4e33b2cea3b4efd224
-  FirebaseMLVision: 7a456009787690e3b53436092ae9b635563de8f3
-  FirebaseMLVisionBarcodeModel: 96ef18a75ecdf867244ef2e75c8c1f01517667dc
-  FirebaseMLVisionFaceModel: d6ba42000f263df52187aee936262bc2002b3389
-  FirebaseMLVisionLabelModel: 7638a20d27219d5baa4b534a62375fc1d5bd077d
-  FirebaseMLVisionTextModel: c264caa3100ca804580bf2a7c1cb9ff390d1f471
   Folly: 30e7936e1c45c08d884aa59369ed951a8e68cf51
   glog: 1f3da668190260b06b429bb211bfbee5cd790c28
-  GoogleAPIClientForREST: 0f19a8280dfe6471f76016645d26eb5dae305101
   GoogleAppMeasurement: dfe55efa543e899d906309eaaac6ca26d249862f
   GoogleDataTransport: 061fe7d9b476710e3cd8ea51e8e07d8b67c2b420
   GoogleDataTransportCCTSupport: 0f39025e8cf51f168711bd3fb773938d7e62ddb5
-  GoogleToolboxForMac: 800648f8b3127618c1b59c7f97684427630c5ea3
   GoogleUtilities: 39530bc0ad980530298e9c4af8549e991fd033b1
-  GTMSessionFetcher: cea130bbfe5a7edc8d06d3f0d17288c32ffe9925
   nanopb: 18003b5e52dab79db540fe93fe9579f399bd1ccd
   PromisesObjC: c119f3cd559f50b7ae681fa59dc1acd19173b7e6
-  Protobuf: 176220c526ad8bd09ab1fb40a978eac3fef665f7
   RCTRequired: b153add4da6e7dbc44aebf93f3cf4fcae392ddf1
   RCTTypeSafety: 9aa1b91d7f9310fc6eadc3cf95126ffe818af320
   React: b6a59ef847b2b40bb6e0180a97d0ca716969ac78
@@ -598,7 +500,6 @@ SPEC CHECKSUMS:
   ReactCommon: 198c7c8d3591f975e5431bec1b0b3b581aa1c5dd
   RNDeviceInfo: 75dac2d7cd6b638b512cc9266ce48a39661fed0e
   RNFBApp: 7b539bb25520fa73d6a240f5c6ea569e27683645
-  RNFBMLVision: a7056ed3c940eb72be6a4442c5a8a2dc013fdacb
   RNFS: 2bd9eb49dc82fa9676382f0585b992c424cd59df
   RNGestureHandler: 8f09cd560f8d533eb36da5a6c5a843af9f056b38
   RNImageCropPicker: cf129d17e042ce3e96fb9ada967c28f21f977c82
@@ -608,6 +509,6 @@ SPEC CHECKSUMS:
   RSKImageCropper: a446db0e8444a036b34f3c43db01b2373baa4b2a
   Yoga: f2a7cd4280bfe2cca5a7aed98ba0eb3d1310f18b
 
-PODFILE CHECKSUM: 283e1cc70d4f37c797f2097df6d07ee92816b3db
+PODFILE CHECKSUM: ff636066f96321e936b5e73b97ed37ae5606b412
 
 COCOAPODS: 1.8.4

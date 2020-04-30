@@ -43,7 +43,7 @@ class GoogleAPI {
         isComplete = false
         countSpace = 0
         for (i = 0; i < lines.length; i++) {
-            lines[i] = lines[i].toUpperCase()
+            //lines[i] = lines[i].toUpperCase()
             lines[i] = lines[i].replace(/[/[.,]/g, ' ')
             words = lines[i].split(/[\s]+/)
             console.log(words)
@@ -113,8 +113,9 @@ class GoogleAPI {
     static processTexts1 = lines => {
         var score = []
         for (i = 0; i < lines.length; i++) {
-            lines[i] = lines[i].replace('a', '4')
+            lines[i] = lines[i].replace('g', '9')
             lines[i] = lines[i].replace(/[a-zA-Z:-|/.-]/g, ' ')
+            lines[i] = lines[i].replace(/[a-zA-Z:*%|/.+]/g, ' ')
             lines[i] = lines[i].replace('-', '')
             lines[i] = lines[i].replace('#', '')
             lines[i] = lines[i].split(' ')
@@ -127,9 +128,10 @@ class GoogleAPI {
                     lines[i][lines[i].length - 1].splice(0)
                 }
             }
-            // if (parseInt(lines[i][0]) >= 10 && parseInt(lines[i][0][0]) == '1') {
-            //     lines[i][0] = lines[i][0].substring(1)
-            // }
+            if (parseInt(lines[i][0]) >= 10 && parseInt(lines[i][0]) <= 99) {
+                lines[i][0] = lines[i][0].substring(1)
+            }
+
             lines[i] = lines[i].join('')
             for (j = 0; j < lines[i].length; j++) {
                 lines[i] = lines[i].replace(' ', '1')
