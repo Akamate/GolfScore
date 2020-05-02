@@ -7,8 +7,10 @@ import { connect } from 'react-redux'
 import Share from 'react-native-share'
 import { system36Hcp, stableFord, doublePeoria, modifiedPeoria, strokePlay } from '../CalculateMethod'
 import MethodPopup from '../Components/MethodPopup'
+import ExportPopup from '../Components/ExportPopup'
+import { PlayerSchema } from '../model/player'
 var RNFS = require('react-native-fs')
-
+const Realm = require('realm')
 class CalculateScoreScreen extends Component {
     constructor(props) {
         super(props)
@@ -17,13 +19,36 @@ class CalculateScoreScreen extends Component {
             holes: [],
             isPageOne: true,
             isShowPopup: false,
-            playerName: ''
+            isShowExportPopup: false,
+            playerName: '',
+            allPlayer: [],
+            isButtonDisable: false
         }
     }
 
-    componentDidMount() {
-        this.findHoles()
-        this.findGrossScore()
+    componentDidMount(props) {
+        arr = []
+        this.props.score.map(score => {
+            console.log(score)
+            // arr.push(score.match(/\d+(?:\.\d+)?/g).map(Number))
+        })
+        this.setState({ score: this.props.score }, () => {
+            this.findHoles()
+            this.findGrossScore()
+            Realm.open({ schema: [PlayerSchema] }).then(realm => {
+                // Create Realm objects and write to local storage
+                const players = realm
+                    .objects('Player')
+                    .filtered(
+                        'date = $0 AND golfCourse = $1',
+                        `${new Date().getDate()}-${new Date().getMonth() + 1}-${new Date().getFullYear()}`,
+                        this.props.courseName
+                    )
+                console.log(players)
+                this.setState({ allPlayer: players })
+                realm.close()
+            })
+        })
     }
 
     findHoles = () => {
@@ -82,7 +107,25 @@ class CalculateScoreScreen extends Component {
         this.calculateScore(methodName, hcp, holeLists)
     }
 
+    onSavePlayer = () => {
+        Realm.open({ schema: [PlayerSchema] }).then(realm => {
+            // Create Realm objects and write to local storage
+            realm.write(() => {
+                const player = realm.create('Player', {
+                    name: this.state.playerName,
+                    golfCourse: this.props.courseName,
+                    scores: this.state.score[0],
+                    date: `${new Date().getDate()}-${new Date().getMonth() + 1}-${new Date().getFullYear()}`
+                })
+            })
+
+            realm.close()
+        })
+        Actions.reset('Home')
+    }
+
     exportCSV = () => {
+        this.onClosePopup()
         var name = `Player,${this.state.playerName}, ,\n`
         var row0 = 'Hole,'
         var par = 'PAR,'
@@ -136,7 +179,12 @@ class CalculateScoreScreen extends Component {
     }
 
     onClosePopup = () => {
-        this.setState({ isShowPopup: false })
+        this.setState({ isShowPopup: false, isShowExportPopup: false })
+    }
+
+    onPressMultiple = () => {
+        this.onClosePopup()
+        Actions.Multiple()
     }
 
     render() {
@@ -168,12 +216,20 @@ class CalculateScoreScreen extends Component {
                             />
                         )}
                         <CustomButton title="Select Method" onPress={() => this.setState({ isShowPopup: true })} />
-                        <CustomButton title="Export as CSV" onPress={this.exportCSV} />
+                        <CustomButton title="Save" onPress={this.onSavePlayer} />
+                        <CustomButton title="Export Score" onPress={() => this.setState({ isShowExportPopup: true })} />
                         <CustomButton title="BACK HOME" onPress={() => Actions.reset('Home')} />
                     </View>
                 </ScrollView>
                 {this.state.isShowPopup && (
                     <MethodPopup onEndSelecting={this.onEndSelecting} onClosePopup={this.onClosePopup} />
+                )}
+                {this.state.isShowExportPopup && (
+                    <ExportPopup
+                        onClosePopup={this.onClosePopup}
+                        onPressSingle={this.exportCSV}
+                        onPressMultiple={this.onPressMultiple}
+                    />
                 )}
             </View>
         )

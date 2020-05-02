@@ -74,6 +74,11 @@ export default (ScoreLists = ({
         return element
     }
 
+    const diffColor = diff => {
+        if (diff < 0) {
+            return '#FF0000'
+        } else return '#0000FF'
+    }
     const scoreElement = index => {
         element = []
         if (isPageOne) {
@@ -92,7 +97,15 @@ export default (ScoreLists = ({
                                 editable={editable}
                             />
                             {/* <Text style={styles.column0}>{scores[index][i]}</Text> */}
-                            <Text style={{ marginTop: 0, textAlign: 'center', marginBottom: 3, fontSize: 15 }}>
+                            <Text
+                                style={{
+                                    marginTop: 0,
+                                    textAlign: 'center',
+                                    marginBottom: 3,
+                                    fontSize: 15,
+                                    color: diffColor(scores[index][i] - parseInt(par[i]))
+                                }}
+                            >
                                 {scores[index][i] != '' ? scores[index][i] - parseInt(par[i]) : '  '}
                             </Text>
                         </View>
@@ -112,7 +125,15 @@ export default (ScoreLists = ({
                     element.push(
                         <View>
                             <Text style={styles.column0}>{scores[index][i + 10]}</Text>
-                            <Text style={{ marginTop: 0, textAlign: 'center', marginBottom: 3, fontSize: 15 }}>
+                            <Text
+                                style={{
+                                    marginTop: 0,
+                                    textAlign: 'center',
+                                    marginBottom: 3,
+                                    fontSize: 15,
+                                    color: diffColor(scores[index][i + 10] - parseInt(par[i + 10]))
+                                }}
+                            >
                                 {scores[index][i + 10] != '' ? scores[index][i + 10] - parseInt(par[i + 10]) : '  '}
                             </Text>
                         </View>
@@ -150,7 +171,7 @@ export default (ScoreLists = ({
                                     HOLE
                                 </Text>
                                 {holeElement()}
-                                <Text style={styles.totalScore}>{isPageOne ? 'IN' : 'OUT'}</Text>
+                                <Text style={styles.totalScore}>{isPageOne ? 'OUT' : 'IN'}</Text>
 
                                 {isComplete && scores[0].length > 14 && <Text style={styles.totalScore}>TOT</Text>}
                                 {isComplete ? (

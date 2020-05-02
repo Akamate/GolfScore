@@ -14,19 +14,16 @@ class SearchScreen extends React.Component {
     }
 
     componentDidMount() {
-        console.log(db)
         db.ref('/courseLists').on('value', querySnapShot => {
             let data = querySnapShot.val() ? querySnapShot.val() : {}
-            console.log(data)
             let courseLists = []
             querySnapShot.forEach(function(childSnapshot) {
                 var childData = childSnapshot.val()
                 let firstChar = childData.courseName[0]
-                childData.courseName = childData.courseName.toString().slice(1)
-                childData.courseName = firstChar + childData.courseName
+                // childData.courseName = childData.courseName.toString().slice(1)
+                childData.courseName = childData.courseName.toUpperCase()
                 childData.key = childSnapshot.key
                 courseLists.push(childData)
-                console.log(childData)
             })
             this.setState({
                 results: courseLists
@@ -45,8 +42,8 @@ class SearchScreen extends React.Component {
                 querySnapShot.forEach(function(childSnapshot) {
                     var childData = childSnapshot.val()
                     let firstChar = childData.courseName[0]
-                    childData.courseName = childData.courseName.toString().slice(1)
-                    childData.courseName = firstChar + childData.courseName
+                    childData.courseName = childData.courseName.toUpperCase()
+                    // childData.courseName = firstChar + childData.courseName
                     childData.key = childSnapshot.key
                     courseLists.push(childData)
                 })
@@ -65,9 +62,9 @@ class SearchScreen extends React.Component {
         if (result[0] != null) {
             console.log(result[0].par)
             Actions.CourseDetailScreen({
-                par: result[0].par,
-                hcp: result[0].hcp,
-                courseName: result[0].courseName
+                par1: result[0].par,
+                hcp1: result[0].hcp,
+                courseName1: result[0].courseName
             })
         }
     }

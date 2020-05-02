@@ -3,7 +3,7 @@ import { View, Text, TextInput, StyleSheet, FlatList, TouchableOpacity } from 'r
 import { Actions } from 'react-native-router-flux'
 import { Icon } from 'native-base'
 
-export default (ParHcpList = ({ par, hcp }) => {
+export default (ParHcpList = ({ par, hcp, onEditing }) => {
     isMorethan9Hole =
         par.filter(parAtHole => {
             return parAtHole != '' && !isNaN(parAtHole)
@@ -12,11 +12,27 @@ export default (ParHcpList = ({ par, hcp }) => {
     column = isMorethan9Hole ? [0, 1, 2, 3, 4, 5] : [0, 1, 2]
 
     holeElement = indexColumn => {
-        holeElements = []
+        console.log(indexColumn)
         startIndex = indexColumn == 0 ? 1 : 10
-        for (i = startIndex; i < startIndex + 9; i++) {
-            holeElements.push(<Text style={styles.columnHole}>{i}</Text>)
-        }
+        holeElements = []
+        indexArr = [
+            0 + startIndex,
+            1 + startIndex,
+            2 + startIndex,
+            3 + startIndex,
+            4 + startIndex,
+            5 + startIndex,
+            6 + startIndex,
+            7 + startIndex,
+            8 + startIndex
+        ]
+        indexArr.map(i => {
+            holeElements.push(
+                <TouchableOpacity style={styles.columnHole} onPress={() => onEditing(i)}>
+                    <Text style={styles.columnHole}>{i}</Text>
+                </TouchableOpacity>
+            )
+        })
         return holeElements
     }
 
@@ -31,7 +47,7 @@ export default (ParHcpList = ({ par, hcp }) => {
 
     hcpElement = indexColumn => {
         holeElements = []
-        startIndex = indexColumn == 1 ? 0 : 9
+        startIndex = indexColumn == 2 ? 0 : 9
         for (i = startIndex; i < startIndex + 9; i++) {
             holeElements.push(<Text style={styles.column0}>{hcp[i]}</Text>)
         }
@@ -72,7 +88,9 @@ export default (ParHcpList = ({ par, hcp }) => {
                             <Text style={styles.columnHole}>PAR</Text>
                             {parElement(item)}
                             <Text style={styles.columnHole}>{sumPar(item)}</Text>
-                            {column.length > 3 && item === 1 && <Text style={styles.columnHole}>{sumPar(1) + sumPar(4)}</Text>}
+                            {column.length > 3 && item === 1 && (
+                                <Text style={styles.columnHole}>{sumPar(1) + sumPar(4)}</Text>
+                            )}
                         </View>
                     )}
                     {(item === 2 || item === 5) && (

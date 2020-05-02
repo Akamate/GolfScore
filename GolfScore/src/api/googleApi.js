@@ -116,6 +116,7 @@ class GoogleAPI {
             lines[i] = lines[i].replace('g', '9')
             lines[i] = lines[i].replace(/[a-zA-Z:-|/.-]/g, ' ')
             lines[i] = lines[i].replace(/[a-zA-Z:*%|/.+]/g, ' ')
+            lines[i] = lines[i].replace(/[0:*%|/()'"]/g, ' ')
             lines[i] = lines[i].replace('-', '')
             lines[i] = lines[i].replace('#', '')
             lines[i] = lines[i].split(' ')
@@ -128,8 +129,13 @@ class GoogleAPI {
                     lines[i][lines[i].length - 1].splice(0)
                 }
             }
-            if (parseInt(lines[i][0]) >= 10 && parseInt(lines[i][0]) <= 99) {
+            if (parseInt(lines[i][0]) >= 10 && parseInt(lines[i][0][0]) == '1') {
                 lines[i][0] = lines[i][0].substring(1)
+            } else if (
+                parseInt(lines[i][lines[i].length - 1]) >= 10 &&
+                parseInt(lines[i][lines[i].length - 1][0]) == '1'
+            ) {
+                lines[i][lines[i].length - 1] = lines[i][lines[i].length - 1].substring(1)
             }
 
             lines[i] = lines[i].join('')
@@ -144,7 +150,7 @@ class GoogleAPI {
             lines[i] = lines[i].replace(/[a-zA-Z:-|/. -]/g, '')
             lines[i] = lines[i].split('')
             console.log(lines[i])
-            if (lines[i].length >= 3) {
+            if (lines[i].length >= 3 && lines[i].length <= 15) {
                 if (lines[i].length >= 10) {
                     var endIndex = lines[i].length
                     for (j = 0; j < endIndex - 9; j++) lines[i].pop()

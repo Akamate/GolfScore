@@ -10,6 +10,7 @@
     "lint": "eslint ."
   },
   "dependencies": {
+    "@react-native-community/cameraroll": "^1.6.0",
     "@react-native-community/netinfo": "^5.8.0",
     "@react-native-firebase/app": "^6.3.4",
     "axios": "^0.19.0",
@@ -31,6 +32,7 @@
     "react-native-screens": "^2.7.0",
     "react-native-share": "^3.2.0",
     "react-redux": "^7.2.0",
+    "realm": "^5.0.4",
     "redux": "^4.0.5"
   },
   "devDependencies": {

@@ -5,7 +5,7 @@ import { Icon } from 'native-base'
 import { strokePlay } from '../CalculateMethod'
 import { setHcp } from '../reducer/actions'
 
-export default (MethodPopup = ({ onEndSelecting, onClosePopup }) => {
+export default (MethodPopup = ({ onEndSelecting, onClosePopup, scores }) => {
     //stroke play -> h/c
     //double prnoria -> random 6 hole each 9 hole -> can select when score 18 hole
     //modieid penoria same with penoria
@@ -20,8 +20,10 @@ export default (MethodPopup = ({ onEndSelecting, onClosePopup }) => {
         } else if (methodName == 'Stroke Play') {
             setStrokePlay(true)
         } else if (methodName == 'Double Peoria' || methodName == 'Modified Peoria') {
-            setName(methodName)
-            setPeoria(true)
+            if (scores[0].length >= 19) {
+                setName(methodName)
+                setPeoria(true)
+            }
         }
     }
     const strokePlayElement = () => {
@@ -41,7 +43,14 @@ export default (MethodPopup = ({ onEndSelecting, onClosePopup }) => {
                     onPress={() => {
                         hcp != '' && !isNaN(hcp) ? onEndSelecting('Stroke Play', hcp, null) : null
                     }}
-                    style={{ backgroundColor: '#44D362', borderRadius: 10, marginTop: 20, padding: 10, width: 200, height: 50 }}
+                    style={{
+                        backgroundColor: '#44D362',
+                        borderRadius: 10,
+                        marginTop: 20,
+                        padding: 10,
+                        width: 200,
+                        height: 50
+                    }}
                 >
                     <Text style={{ fontSize: 25, color: '#ffffff', textAlign: 'center' }}>{'Select'}</Text>
                 </TouchableOpacity>
@@ -66,7 +75,14 @@ export default (MethodPopup = ({ onEndSelecting, onClosePopup }) => {
                 </View>
                 <TouchableOpacity
                     onPress={confirmPeoria}
-                    style={{ backgroundColor: '#44D362', borderRadius: 10, marginTop: 20, padding: 10, width: 200, height: 50 }}
+                    style={{
+                        backgroundColor: '#44D362',
+                        borderRadius: 10,
+                        marginTop: 20,
+                        padding: 10,
+                        width: 200,
+                        height: 50
+                    }}
                 >
                     <Text style={{ fontSize: 25, color: '#ffffff', textAlign: 'center' }}>{'Select'}</Text>
                 </TouchableOpacity>
@@ -136,9 +152,18 @@ export default (MethodPopup = ({ onEndSelecting, onClosePopup }) => {
                                         backgroundColor: '#F2F2F7'
                                     }}
                                     howsHorizontalScrollIndicator={false}
-                                    data={['Stroke Play', 'Stable Ford', 'Double Peoria', 'Modified Peoria', 'System 36 Handicap']}
+                                    data={[
+                                        'Stroke Play',
+                                        'Stable Ford',
+                                        'Double Peoria',
+                                        'Modified Peoria',
+                                        'System 36 Handicap'
+                                    ]}
                                     renderItem={({ item, key }) => (
-                                        <TouchableOpacity onPress={() => selectMethod(item)} style={{ borderRadius: 5, marginBottom: 10 }}>
+                                        <TouchableOpacity
+                                            onPress={() => selectMethod(item)}
+                                            style={{ borderRadius: 5, marginBottom: 10 }}
+                                        >
                                             <Text style={styles.methodText}> {item} </Text>
                                             <View style={{ borderBottomWidth: 1, borderColor: '#FFFFFF', height: 1 }} />
                                         </TouchableOpacity>

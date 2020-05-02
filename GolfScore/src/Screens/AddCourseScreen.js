@@ -53,7 +53,7 @@ class AddCourseScreen extends React.Component {
     initialParHcp() {
         const par = []
         const hcp = []
-        for (i = 0; i <= this.state.numOfHoles; i++) {
+        for (i = 0; i < this.state.numOfHoles; i++) {
             par.push('')
             hcp.push('')
         }
@@ -77,6 +77,10 @@ class AddCourseScreen extends React.Component {
         this.setState({ isDisabledButton: text == '' || this.state.par[holesNumber] == '' ? true : false })
     }
 
+    onEndEditingParHcp = index => {
+        console.log(index)
+        this.setState({ currentHole: index, isComplete: false })
+    }
     goBackHome = () => {
         console.log('fdsfdsds')
         const courseName = this.state.courseName
@@ -160,7 +164,7 @@ class AddCourseScreen extends React.Component {
     parhcpList = () => {
         return (
             <View style={{ alignItems: 'center' }}>
-                <ParHcpLists par={this.state.par} hcp={this.state.hcp} />
+                <ParHcpLists par={this.state.par} hcp={this.state.hcp} onEditing={this.onEndEditingParHcp} />
                 <CustomButton title="SAVE COURSE" onPress={this.goBackHome} disable={!this.state.isComplete} />
             </View>
         )

@@ -5,13 +5,14 @@ import { connect } from 'react-redux'
 import { setCourseName, setPar, setHcp } from '../reducer/actions'
 import CustomButton from '../Components/CustomButton'
 import ParHcpLists from '../Components/ParHcpList'
+import { GolfCourseSchema } from '../model/player'
 class CourseDetailScreen extends React.Component {
     constructor(props) {
         super(props)
         this.state = {
             par: [],
             hcp: [],
-            courseName: '',
+            courseName1: '',
             showIndicator: false,
             isComplete: false,
             holes: []
@@ -23,9 +24,9 @@ class CourseDetailScreen extends React.Component {
     }
 
     setDetail() {
-        const par = this.props.par
-        const hcp = this.props.hcp
-        const courseName = this.props.courseName
+        const par = this.props.par1
+        const hcp = this.props.hcp1
+        const courseName = this.props.courseName1
         this.setState(
             {
                 par: par,
@@ -49,32 +50,52 @@ class CourseDetailScreen extends React.Component {
     goBackHome = () => {
         this.props.setCourseName(this.state.courseName)
         //this.props.setPar(this.state.par)
-        this.setPar()
-        this.props.setHcp(this.state.hcp)
+        par = this.setPar()
+        hcp = this.state.hcp.map(Number)
+        this.props.setHcp(hcp)
+        this.saveDetail(par, hcp)
         Actions.reset('Home')
     }
 
     setPar = () => {
-        console.log('14141')
-        var par = this.state.par
-        console.log('141412')
+        var par = [...this.state.par]
         var sumFirst9Hole = 0
         var sumLast9Hole = 0
         for (i = 0; i < 9; i++) {
-            if (!isNaN(par[i])) sumFirst9Hole += parseInt(par[i])
+            par[i] = parseInt(par[i])
+            if (!isNaN(par[i])) {
+                sumFirst9Hole += parseInt(par[i])
+                par[i] = parseInt(par[i])
+            }
         }
         if (par.length > 9) {
             for (i = 9; i < 18; i++) {
+                par[i] = parseInt(par[i])
                 if (!isNaN(par[i])) sumLast9Hole += parseInt(par[i])
             }
             par.push(sumLast9Hole)
             par.push(sumFirst9Hole + sumLast9Hole)
         }
         par.splice(9, 0, sumFirst9Hole)
-        console.log(par)
+
         this.props.setPar(par)
+        return par
     }
 
+    saveDetail = (par, hcp) => {
+        Realm.open({ schema: [GolfCourseSchema] }).then(realm => {
+            realm.write(() => {
+                const golfCourse = realm.objects('GolfCourse')
+                realm.delete(golfCourse)
+                const newGolfCourse = realm.create('GolfCourse', {
+                    name: this.state.courseName,
+                    par: par,
+                    hcp: hcp
+                })
+            })
+            realm.close()
+        })
+    }
     goSearchScreen = () => {
         Actions.pop()
     }
@@ -88,6 +109,7 @@ class CourseDetailScreen extends React.Component {
                 </View>
 
                 <View style={{ alignItems: 'center' }}>
+                    <Text style={{ fontSize: 25 }}>{this.state.courseName}</Text>
                     <ParHcpLists par={this.state.par} hcp={this.state.hcp} />
                     <CustomButton title="Choose This Course" onPress={this.goBackHome} />
                 </View>
@@ -166,7 +188,11 @@ const styles = StyleSheet.create({
     }
 })
 
-const mapStateToProps = state => ({})
+const mapStateToProps = state => ({
+    courseName: state.courseName,
+    par: state.par,
+    hcp: state.hcp
+})
 
 const mapDispatchToProps = dispatch => ({
     setCourseName: courseName => dispatch(setCourseName(courseName)),

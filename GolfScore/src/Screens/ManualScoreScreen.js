@@ -179,11 +179,18 @@ class ManualScoreScreen extends React.Component {
                     </Text>
                 </View>
                 <View style={{ flexDirection: 'column', marginTop: 20, alignItems: 'center' }}>
-                    <Text style={{ fontSize: 30, marginLeft: 20, fontWeight: 'bold' }}>Num Of Player</Text>
+                    <Text style={{ fontSize: 25, marginLeft: 20, fontWeight: 'bold' }}>Num Of Player</Text>
                     <View style={{ flexDirection: 'row', marginTop: 10 }}>
                         <TouchableOpacity
                             onPress={this.increaseNumberPlayer}
-                            style={{ borderWidth: 1, padding: 10, borderColor: 'blue', borderRadius: 4 }}
+                            style={{
+                                borderWidth: 1,
+                                width: 40,
+                                height: 40,
+                                borderColor: 'blue',
+                                borderRadius: 4,
+                                alignItems: 'center'
+                            }}
                         >
                             <Text style={{ fontSize: 30 }}>+</Text>
                         </TouchableOpacity>
@@ -191,10 +198,12 @@ class ManualScoreScreen extends React.Component {
                             onPress={this.decreaseNumberPlayer}
                             style={{
                                 borderWidth: 1,
-                                padding: 12,
+                                width: 40,
+                                height: 40,
                                 borderColor: 'blue',
                                 borderRadius: 4,
-                                marginLeft: 10
+                                marginLeft: 10,
+                                alignItems: 'center'
                             }}
                         >
                             <Text style={{ fontSize: 30 }}>-</Text>

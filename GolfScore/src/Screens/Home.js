@@ -12,8 +12,11 @@ import { connect } from 'react-redux'
 import ImagePicker from 'react-native-image-crop-picker'
 import ActionSheet from 'react-native-actionsheet'
 import Popup from '../Components/Popup'
-import logo from './logo.png'
 import RNFS from 'react-native-fs'
+import CameraRoll from '@react-native-community/cameraroll'
+import { setCourseName, setPar, setHcp } from '../reducer/actions'
+const Realm = require('realm')
+import { GolfCourseSchema } from '../model/player'
 import {
     Threshold,
     Brightness,
@@ -36,6 +39,30 @@ class Home extends Component {
             imageUri1: '',
             imgWidth: 0,
             imageHeight: 0
+        }
+    }
+
+    componentDidMount = () => {
+        if (this.props.courseName == undefined) {
+            Realm.open({ schema: [GolfCourseSchema] }).then(realm => {
+                const golfCourse = realm.objects('GolfCourse')
+                this.props.setCourseName(golfCourse['0'].name)
+                const parArr = []
+                golfCourse['0'].par.map(par => {
+                    parArr.push(par)
+                })
+                this.props.setPar(parArr)
+                const hcpArr = []
+                golfCourse['0'].hcp.map(hcp => {
+                    hcpArr.push(hcp)
+                })
+                this.props.setHcp(hcpArr)
+                console.log(golfCourse['0'].hcp)
+                console.log(hcpArr)
+                console.log(golfCourse['0'].par)
+                console.log(parArr)
+                realm.close()
+            })
         }
     }
 
@@ -71,27 +98,29 @@ class Home extends Component {
 
     imageScore = () => {
         return (
-            <Normal
+            <Threshold
                 image={
-                    <Normal
+                    <Grayscale
                         image={
                             <Brightness
                                 image={
-                                    <Normal
+                                    <Contrast
                                         image={
                                             <Image
                                                 source={{ uri: this.state.imageUri }}
                                                 style={{ width: '100%', height: '100%' }}
-                                                resizeMode="stretch"
+                                                resizeMethod="scale"
                                             />
                                         }
+                                        amount={2}
                                     />
                                 }
-                                amount={1.3}
+                                amount={8}
                             />
                         }
                     />
                 }
+                amount={5}
                 onExtractImage={({ nativeEvent }) =>
                     this.setState({ imageUri1: nativeEvent.uri }, () => {
                         this.base64(nativeEvent.uri)
@@ -102,14 +131,13 @@ class Home extends Component {
         )
     }
 
-    onPressCamera = () => {
+    onPressCamera = async () => {
         ImagePicker.openCamera({
-            height: 160,
-            width: Dimensions.get('window').width,
+            height: 500,
+            width: 1000,
             cropping: true,
-            includeBase64: true
+            forceJpg: true
         }).then(image => {
-            console.log(image.width, image.height)
             this.setState(
                 {
                     showIndicator: true,
@@ -130,12 +158,7 @@ class Home extends Component {
 
     onPressManualButton = () => {
         Actions.ScoreView({
-            texts: [
-                [5, 5, 4, 5, 3, 5, 8, 3, 4],
-                [4, 2, 3, 4, 3, 4, 4, 3, 5],
-                [1, 3, 3, 4, 5, 6, 4, 5, 3],
-                [5, 5, 4, 5, 3, 5, 8, 3, 4]
-            ]
+            texts: [[5, 5, 4, 5, 3, 5, 8, 3, 4]]
         })
     }
 
@@ -148,6 +171,7 @@ class Home extends Component {
             return res
         })
         this.setState({ imageUri1: uri })
+        CameraRoll.saveToCameraRoll(uri, 'photo')
         googleAPI.postImage(data, (err, data) => {
             console.log(data)
             Actions.ScoreView({ texts: data })
@@ -161,9 +185,9 @@ class Home extends Component {
         return (
             <View style={styles.container}>
                 {this.state.imageUri != '' && this.imageScore()}
-                {this.state.imageUri1 != '' && (
-                    <Image style={{ width: 500, height: 210 }} source={{ uri: this.state.imageUri1 }} />
-                )}
+                {/* {this.state.imageUri1 != '' && (
+                    <Image style={{ width: '100%', height: '100%' }} source={{ uri: this.state.imageUri1 }} />
+                )} */}
                 {!this.state.isSelected && (
                     <Popup
                         type="Danger"
@@ -198,7 +222,7 @@ class Home extends Component {
                     <TouchableOpacity onPress={() => Actions.ManualScore()} style={styles.scoreButton}>
                         <Text style={styles.scoreText}> Enter Manually </Text>
                     </TouchableOpacity>
-                    <TouchableOpacity onPress={this.showActionSheet} style={styles.scoreButton}>
+                    <TouchableOpacity onPress={this.onPressManualButton} style={styles.scoreButton}>
                         <Text style={styles.scoreText}> Scan Score Card </Text>
                     </TouchableOpacity>
                     <ActionSheet
@@ -350,7 +374,16 @@ const styles = StyleSheet.create({
 })
 
 const mapStateToProps = state => ({
-    courseName: state.courseName
+    courseName: state.courseName,
+    par: state.par,
+    hcp: state.hcp
 })
-
-export default connect(mapStateToProps)(Home)
+const mapDispatchToProps = dispatch => ({
+    setCourseName: courseName => dispatch(setCourseName(courseName)),
+    setPar: par => dispatch(setPar(par)),
+    setHcp: hcp => dispatch(setHcp(hcp))
+})
+export default connect(
+    mapStateToProps,
+    mapDispatchToProps
+)(Home)

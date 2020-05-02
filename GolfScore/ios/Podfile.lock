@@ -49,6 +49,9 @@ PODS:
     - boost-for-react-native
     - DoubleConversion
     - glog
+  - GCDWebServer (3.5.4):
+    - GCDWebServer/Core (= 3.5.4)
+  - GCDWebServer/Core (3.5.4)
   - glog (0.3.5)
   - GoogleAppMeasurement (6.1.6):
     - GoogleUtilities/AppDelegateSwizzler (~> 6.0)
@@ -248,6 +251,8 @@ PODS:
     - React-cxxreact (= 0.61.5)
     - React-jsi (= 0.61.5)
   - React-jsinspector (0.61.5)
+  - react-native-cameraroll (1.6.0):
+    - React
   - react-native-image-base64 (0.1.4):
     - React
   - react-native-image-filter-kit (0.7.1):
@@ -292,6 +297,9 @@ PODS:
     - React-cxxreact (= 0.61.5)
     - React-jsi (= 0.61.5)
     - ReactCommon/jscallinvoker (= 0.61.5)
+  - RealmJS (5.0.4):
+    - GCDWebServer
+    - React
   - RNDeviceInfo (2.1.2):
     - React
   - RNFBApp (6.7.1):
@@ -336,6 +344,7 @@ DEPENDENCIES:
   - React-jsi (from `../node_modules/react-native/ReactCommon/jsi`)
   - React-jsiexecutor (from `../node_modules/react-native/ReactCommon/jsiexecutor`)
   - React-jsinspector (from `../node_modules/react-native/ReactCommon/jsinspector`)
+  - "react-native-cameraroll (from `../node_modules/@react-native-community/cameraroll`)"
   - react-native-image-base64 (from `../node_modules/react-native-image-base64`)
   - react-native-image-filter-kit (from `../node_modules/react-native-image-filter-kit`)
   - react-native-image-picker (from `../node_modules/react-native-image-picker`)
@@ -351,6 +360,7 @@ DEPENDENCIES:
   - React-RCTVibration (from `../node_modules/react-native/Libraries/Vibration`)
   - ReactCommon/jscallinvoker (from `../node_modules/react-native/ReactCommon`)
   - ReactCommon/turbomodule/core (from `../node_modules/react-native/ReactCommon`)
+  - RealmJS (from `../node_modules/realm`)
   - RNDeviceInfo (from `../node_modules/react-native-device-info`)
   - "RNFBApp (from `../node_modules/@react-native-firebase/app`)"
   - RNFS (from `../node_modules/react-native-fs`)
@@ -371,6 +381,7 @@ SPEC REPOS:
     - FirebaseCoreDiagnostics
     - FirebaseCoreDiagnosticsInterop
     - FirebaseInstanceID
+    - GCDWebServer
     - GoogleAppMeasurement
     - GoogleDataTransport
     - GoogleDataTransportCCTSupport
@@ -408,6 +419,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/ReactCommon/jsiexecutor"
   React-jsinspector:
     :path: "../node_modules/react-native/ReactCommon/jsinspector"
+  react-native-cameraroll:
+    :path: "../node_modules/@react-native-community/cameraroll"
   react-native-image-base64:
     :path: "../node_modules/react-native-image-base64"
   react-native-image-filter-kit:
@@ -436,6 +449,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/Libraries/Vibration"
   ReactCommon:
     :path: "../node_modules/react-native/ReactCommon"
+  RealmJS:
+    :path: "../node_modules/realm"
   RNDeviceInfo:
     :path: "../node_modules/react-native-device-info"
   RNFBApp:
@@ -468,6 +483,7 @@ SPEC CHECKSUMS:
   FirebaseCoreDiagnosticsInterop: 296e2c5f5314500a850ad0b83e9e7c10b011a850
   FirebaseInstanceID: ebd2ea79ee38db0cb5f5167b17a0d387e1cc7b6e
   Folly: 30e7936e1c45c08d884aa59369ed951a8e68cf51
+  GCDWebServer: 2c156a56c8226e2d5c0c3f208a3621ccffbe3ce4
   glog: 1f3da668190260b06b429bb211bfbee5cd790c28
   GoogleAppMeasurement: dfe55efa543e899d906309eaaac6ca26d249862f
   GoogleDataTransport: 061fe7d9b476710e3cd8ea51e8e07d8b67c2b420
@@ -484,6 +500,7 @@ SPEC CHECKSUMS:
   React-jsi: cb2cd74d7ccf4cffb071a46833613edc79cdf8f7
   React-jsiexecutor: d5525f9ed5f782fdbacb64b9b01a43a9323d2386
   React-jsinspector: fa0ecc501688c3c4c34f28834a76302233e29dc0
+  react-native-cameraroll: 02e60e9af9273a3cc3b641632bf651189830aaf8
   react-native-image-base64: 2ff9ac788639c87a91361ab6652cc95e871b1e54
   react-native-image-filter-kit: 19b6727bc2640bdb0bb50735dfdbfd9ba333599e
   react-native-image-picker: 7a85cf7b0a53845f03ae52fb4592a2748ded069b
@@ -498,6 +515,7 @@ SPEC CHECKSUMS:
   React-RCTText: 9ccc88273e9a3aacff5094d2175a605efa854dbe
   React-RCTVibration: a49a1f42bf8f5acf1c3e297097517c6b3af377ad
   ReactCommon: 198c7c8d3591f975e5431bec1b0b3b581aa1c5dd
+  RealmJS: 52b98789c32fa953ba441afd3ca6ac4762f806e9
   RNDeviceInfo: 75dac2d7cd6b638b512cc9266ce48a39661fed0e
   RNFBApp: 7b539bb25520fa73d6a240f5c6ea569e27683645
   RNFS: 2bd9eb49dc82fa9676382f0585b992c424cd59df
@@ -509,6 +527,6 @@ SPEC CHECKSUMS:
   RSKImageCropper: a446db0e8444a036b34f3c43db01b2373baa4b2a
   Yoga: f2a7cd4280bfe2cca5a7aed98ba0eb3d1310f18b
 
-PODFILE CHECKSUM: ff636066f96321e936b5e73b97ed37ae5606b412
+PODFILE CHECKSUM: 4f951d0e42bfb90f958db44fc501756baab5092a
 
 COCOAPODS: 1.8.4

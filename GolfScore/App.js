@@ -22,6 +22,7 @@ import SearchScreen from './src/Screens/SearchScreen'
 import CourseDetailScreen from './src/Screens/CourseDetailScreen'
 import AddCourseScreen from './src/Screens/AddCourseScreen'
 import ManualScoreScreen from './src/Screens/ManualScoreScreen'
+import MultipleExportScreen from './src/Screens/MultipleExportScreen'
 import { Scene, Route, Router, ActionConst } from 'react-native-router-flux'
 import { Provider } from 'react-redux'
 import { createStore, applyMiddleware } from 'redux'
@@ -41,6 +42,13 @@ export default class App extends Component {
                             hideNavBar={true}
                             type={ActionConst.PUSH}
                             initial={true}
+                        />
+                        <Scene
+                            key="Multiple"
+                            component={MultipleExportScreen}
+                            title="Multiple"
+                            hideNavBar={true}
+                            type={ActionConst.PUSH}
                         />
                         <Scene
                             key="ManualScore"
