@@ -192,6 +192,7 @@ android {
 }
 
 dependencies {
+    implementation project(':react-native-gesture-handler')
     implementation project(':realm')
     implementation project(':@react-native-community_cameraroll')
     // project(':react-native-camera')

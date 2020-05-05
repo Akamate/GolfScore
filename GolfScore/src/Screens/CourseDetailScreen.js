@@ -110,7 +110,7 @@ class CourseDetailScreen extends React.Component {
 
                 <View style={{ alignItems: 'center' }}>
                     <Text style={{ fontSize: 25 }}>{this.state.courseName}</Text>
-                    <ParHcpLists par={this.state.par} hcp={this.state.hcp} />
+                    <ParHcpLists par={this.state.par} hcp={this.state.hcp} editable={false} />
                     <CustomButton title="Choose This Course" onPress={this.goBackHome} />
                 </View>
             </ScrollView>

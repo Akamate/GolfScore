@@ -114,7 +114,6 @@ export default (MethodPopup = ({ onEndSelecting, onClosePopup, scores }) => {
         filterArr = holeList.filter(hole => hole.value == '')
         if (filterArr.length == 0) {
             filterArr = holeList.map(hole => parseInt(hole))
-            console.log(filterArr)
             onEndSelecting(name, null, filterArr)
         }
     }

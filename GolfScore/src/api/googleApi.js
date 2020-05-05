@@ -1,6 +1,8 @@
 import config from './../../config.json'
 class GoogleAPI {
-    static postImage = async (data, callback) => {
+    static postImage = async (data, numberPlayer, callback) => {
+        var type = ''
+        type = numberPlayer <= 1 ? 'TEXT_DETECTION' : 'DOCUMENT_TEXT_DETECTION'
         let googleVisionRes = await fetch(config.googleCloud.api + config.googleCloud.apiKey, {
             method: 'POST',
             body: JSON.stringify({
@@ -9,7 +11,7 @@ class GoogleAPI {
                         image: {
                             content: data
                         },
-                        features: [{ type: 'DOCUMENT_TEXT_DETECTION' }],
+                        features: [{ type: type }],
                         imageContext: {
                             languageHints: ['en-t-i0-handwrit']
                         }
@@ -21,20 +23,21 @@ class GoogleAPI {
         await googleVisionRes
             .json()
             .then(googleVisionRes => {
-                console.log(googleVisionRes)
+                console.log(googleVisionRes.responses)
                 if (googleVisionRes) {
-                    lines = googleVisionRes.responses[0].fullTextAnnotation.text.split('\n')
-                    console.log(lines)
-                    score = this.processTexts1(lines)
-                    callback(null, score)
+                    if (googleVisionRes.responses[0].fullTextAnnotation) {
+                        lines = googleVisionRes.responses[0].fullTextAnnotation.text.split('\n')
+                        console.log(lines)
+                        score = this.processTexts1(lines)
+                        callback(null, score)
+                    } else {
+                        callback(null, [])
+                    }
                 }
             })
             .catch(error => {
                 console.log(error)
             })
-
-        // score = this.processTexts(lines)
-        //    callback(null,score)
     }
 
     static processTexts = lines => {
@@ -43,7 +46,6 @@ class GoogleAPI {
         isComplete = false
         countSpace = 0
         for (i = 0; i < lines.length; i++) {
-            //lines[i] = lines[i].toUpperCase()
             lines[i] = lines[i].replace(/[/[.,]/g, ' ')
             words = lines[i].split(/[\s]+/)
             console.log(words)
@@ -62,7 +64,6 @@ class GoogleAPI {
                 } else if (words[j] == 'X') {
                     isComplete = true
                 }
-                // console.log(words[j])
             }
             console.log(isComplete)
             console.log(count)
@@ -114,37 +115,53 @@ class GoogleAPI {
         var score = []
         for (i = 0; i < lines.length; i++) {
             lines[i] = lines[i].replace('g', '9')
-            lines[i] = lines[i].replace(/[a-zA-Z:-|/.-]/g, ' ')
-            lines[i] = lines[i].replace(/[a-zA-Z:*%|/.+]/g, ' ')
-            lines[i] = lines[i].replace(/[0:*%|/()'"]/g, ' ')
+            lines[i] = lines[i].replace('q', '4')
+            lines[i] = lines[i].replace('b', '4')
+            lines[i] = lines[i].replace(/[a-zA-Z:-|/.-]/g, '')
+            lines[i] = lines[i].replace(/[a-zA-Z:*%|/.+]/g, '')
+            lines[i] = lines[i].replace(/[0:*%|/()'",]/g, '')
             lines[i] = lines[i].replace('-', '')
             lines[i] = lines[i].replace('#', '')
             lines[i] = lines[i].split(' ')
+            len = 0
+            for (j = 0; j < lines[i].length; j++) {
+                len += lines[i][j].length
+            }
+            console.log(len)
             if (
                 isNaN(lines[i][lines[i].length - 1]) &&
                 parseInt(lines[i][lines[i].length - 1]) >= 10 &&
-                parseInt(lines[i][lines[i].length - 1]) <= 99
+                parseInt(lines[i][lines[i].length - 1]) <= 99 &&
+                len > 9
             ) {
                 if (lines[i][lines[i].length - 1][2] == '1') {
                     lines[i][lines[i].length - 1].splice(0)
                 }
             }
-            if (parseInt(lines[i][0]) >= 10 && parseInt(lines[i][0][0]) == '1') {
+            if (parseInt(lines[i][0]) >= 10 && parseInt(lines[i][0][0]) == '1' && len > 9) {
                 lines[i][0] = lines[i][0].substring(1)
             } else if (
                 parseInt(lines[i][lines[i].length - 1]) >= 10 &&
-                parseInt(lines[i][lines[i].length - 1][0]) == '1'
+                parseInt(lines[i][lines[i].length - 1][0]) == '1' &&
+                len > 9
             ) {
                 lines[i][lines[i].length - 1] = lines[i][lines[i].length - 1].substring(1)
             }
-
-            lines[i] = lines[i].join('')
+            console.log(lines[i])
             for (j = 0; j < lines[i].length; j++) {
-                lines[i] = lines[i].replace(' ', '1')
+                if (parseInt(lines[i][j]) >= 10 && parseInt(lines[i][j][j]) == '1' && len > 9) {
+                    lines[i][j] = lines[i][j].substring(1)
+                }
             }
-            if (lines[i].length > 9) {
-                for (j = 0; j < lines[i].length - 9; j++) {
-                    lines[i] = lines[i].replace('1', ' ')
+            lines[i] = lines[i].join('')
+            if (len > 9) {
+                for (j = 0; j < lines[i].length; j++) {
+                    lines[i] = lines[i].replace(' ', '1')
+                }
+                if (lines[i].length > 9) {
+                    for (j = 0; j < lines[i].length - 9; j++) {
+                        lines[i] = lines[i].replace('1', ' ')
+                    }
                 }
             }
             lines[i] = lines[i].replace(/[a-zA-Z:-|/. -]/g, '')

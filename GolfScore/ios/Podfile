@@ -39,6 +39,8 @@ target 'GolfScore' do
 
   pod 'RealmJS', :path => '../node_modules/realm'
 
+  pod 'RNGestureHandler', :path => '../node_modules/react-native-gesture-handler'
+
   target 'GolfScoreTests' do
     inherit! :search_paths
     # Pods for testing

@@ -1,6 +1,5 @@
 import React from 'react'
 import { Text, ScrollView, StyleSheet, View, Button, FlatList, TouchableOpacity } from 'react-native'
-import SearchBar from '../Components/Searchbar'
 import { Actions } from 'react-native-router-flux'
 import Share from 'react-native-share'
 import { PlayerSchema } from '../model/player'
@@ -27,31 +26,39 @@ class MultipleExportScreen extends React.Component {
     }
 
     componentDidMount() {
+        this.getPlayerDetail()
+    }
+
+    getPlayerDetail = () => {
         Realm.open({ schema: [PlayerSchema] }).then(realm => {
-            // Create Realm objects and write to local storage
             const players = realm
                 .objects('Player')
                 .filtered(
                     'date = $0 AND golfCourse = $1',
-                    `${new Date().getDate()}-${new Date().getMonth()}-${new Date().getFullYear()}`,
+                    `${new Date().getDate()}-${new Date().getMonth() + 1}-${new Date().getFullYear()}`,
                     this.props.courseName
                 )
-            const result = []
-            const playersScore = []
-            players.map((player, index) => {
-                result.push({ name: player.name, index: index })
-                playersScore.push([])
-                player.scores.map(score => {
-                    playersScore[index].push(score)
+            console.log(players)
+            const players1 = realm.objects('Player')
+            console.log(players1)
+            if (players.length != 0) {
+                const result = []
+                const playersScore = []
+                players.map((player, index) => {
+                    result.push({ name: player.name, index: index })
+                    playersScore.push([])
+                    player.scores.map(score => {
+                        playersScore[index].push(score)
+                    })
                 })
-            })
 
-            this.setState({
-                results: result,
-                date: players['0'].date,
-                courseName: players['0'].golfCourse,
-                playersScore: playersScore
-            })
+                this.setState({
+                    results: result,
+                    date: players['0'].date,
+                    courseName: players['0'].golfCourse,
+                    playersScore: playersScore
+                })
+            }
             realm.close()
         })
     }
@@ -64,7 +71,66 @@ class MultipleExportScreen extends React.Component {
     }
 
     goBackHome = () => {
-        Actions.pop()
+        if (this.state.isSelected) {
+            this.setState({ isSelected: false })
+        } else {
+            Actions.reset('Home')
+        }
+    }
+
+    exportCSV = () => {
+        var hole = 'Hole,'
+        var par = 'PAR,'
+        var hcp = 'HCP,'
+        console.log(this.state.playersScore)
+        if (this.state.playersScore[0].length > 12) {
+            hole = 'Hole,1,2,3,4,5,6,7,8,9,OUT,10,11,12,13,14,15,16,17,18,IN,TOT,H/C,NET\n'
+            for (i = 0; i < this.props.par.length; i++) {
+                par += `${this.props.par[i]},`
+                hcp += i == 9 ? '  ,' : i < 9 ? `${this.props.hcp[i]},` : i < 19 ? `${this.props.hcp[i - 1]},` : ''
+            }
+        } else {
+            hole = 'Hole,1,2,3,4,5,6,7,8,9,OUT,H/C,NET\n'
+            for (i = 0; i < 10; i++) {
+                par += `${this.props.par[i]},`
+                hcp += i < 9 ? `${this.props.hcp[i]},` : ' '
+            }
+        }
+        scores = ''
+        for (i = 0; i < this.state.playersScore.length; i++) {
+            scores += this.state.results[i].name + ','
+            for (j = 0; j < this.state.playersScore[i].length; j++) {
+                if (this.state.playersScore[i][j] != '') {
+                    scores += `${this.state.playersScore[i][j]},`
+                }
+            }
+            scores += '\n'
+        }
+        par += '\n'
+        hcp += '\n'
+        alltext = hole + scores + par + hcp
+        console.log(alltext)
+        // write the file
+        this.writeFile(alltext)
+    }
+
+    writeFile = alltext => {
+        var courseName = this.state.courseName.split(' ')[0]
+        var path = RNFS.DocumentDirectoryPath + `/${courseName} ${this.state.date}.csv`
+        RNFS.writeFile(path, alltext, 'utf8')
+            .then(success => {
+                console.log('FILE WRITTEN!')
+                Share.open({ url: `file://${path}` })
+                    .then(res => {
+                        console.log(res)
+                    })
+                    .catch(err => {
+                        err && console.log(err)
+                    })
+            })
+            .catch(err => {
+                console.log(err.message)
+            })
     }
 
     render() {
@@ -72,7 +138,6 @@ class MultipleExportScreen extends React.Component {
             <View
                 style={{
                     flex: 1,
-                    overflow: 'hidden',
                     backgroundColor: '#FFFFFF'
                 }}
             >
@@ -128,7 +193,7 @@ class MultipleExportScreen extends React.Component {
                 )}
                 {!this.state.isSelected && (
                     <View style={{ alignItems: 'center', marginBottom: 50 }}>
-                        <CustomButton title="Export All" />
+                        <CustomButton title="Export All" onPress={this.exportCSV} />
                     </View>
                 )}
             </View>

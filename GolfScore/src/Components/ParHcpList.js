@@ -3,7 +3,8 @@ import { View, Text, TextInput, StyleSheet, FlatList, TouchableOpacity } from 'r
 import { Actions } from 'react-native-router-flux'
 import { Icon } from 'native-base'
 
-export default (ParHcpList = ({ par, hcp, onEditing }) => {
+export default (ParHcpList = ({ par, hcp, onEditing, editable }) => {
+    editable = editable == undefined ? false : editable
     isMorethan9Hole =
         par.filter(parAtHole => {
             return parAtHole != '' && !isNaN(parAtHole)
@@ -12,7 +13,6 @@ export default (ParHcpList = ({ par, hcp, onEditing }) => {
     column = isMorethan9Hole ? [0, 1, 2, 3, 4, 5] : [0, 1, 2]
 
     holeElement = indexColumn => {
-        console.log(indexColumn)
         startIndex = indexColumn == 0 ? 1 : 10
         holeElements = []
         indexArr = [
@@ -28,7 +28,7 @@ export default (ParHcpList = ({ par, hcp, onEditing }) => {
         ]
         indexArr.map(i => {
             holeElements.push(
-                <TouchableOpacity style={styles.columnHole} onPress={() => onEditing(i)}>
+                <TouchableOpacity style={styles.columnHole} onPress={() => onEditing(i)} disabled={!editable}>
                     <Text style={styles.columnHole}>{i}</Text>
                 </TouchableOpacity>
             )

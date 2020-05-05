@@ -88,21 +88,23 @@ export default (ScoreLists = ({
                 if (i < 9) {
                     element.push(
                         <View>
-                            <TextInput
-                                style={styles.column0}
-                                value={scores[index][i].toString()}
-                                returnKeyType="done"
-                                keyboardType="number-pad"
-                                onChangeText={text => onEditingScore(text, index, i)}
-                                editable={editable}
-                            />
-                            {/* <Text style={styles.column0}>{scores[index][i]}</Text> */}
+                            <TouchableOpacity onPress={() => (editable ? onEditingScore(index, i) : null)}>
+                                {/* <TextInput
+                                    style={styles.column0}
+                                    value={scores[index][i].toString()}
+                                    returnKeyType="done"
+                                    keyboardType="number-pad"
+                                    onChangeText={text => onEditingScore(text, index, i)}
+                                    editable={editable}
+                                /> */}
+                                <Text style={styles.column0}>{scores[index][i]}</Text>
+                            </TouchableOpacity>
                             <Text
                                 style={{
-                                    marginTop: 0,
                                     textAlign: 'center',
                                     marginBottom: 3,
                                     fontSize: 15,
+                                    height: 20,
                                     color: diffColor(scores[index][i] - parseInt(par[i]))
                                 }}
                             >
@@ -120,17 +122,21 @@ export default (ScoreLists = ({
                 y += 1
             })
         } else {
-            for (i = 0; i < 10; i++) {
+            arr = [10, 11, 12, 13, 14, 15, 16, 17, 18, 19]
+            arr.map(i => {
                 if (i < 9) {
                     element.push(
                         <View>
-                            <Text style={styles.column0}>{scores[index][i + 10]}</Text>
+                            <TouchableOpacity onPress={() => (editable ? onEditingScore(index, i) : null)}>
+                                <Text style={styles.column0}>{scores[index][i + 10]}</Text>
+                            </TouchableOpacity>
                             <Text
                                 style={{
                                     marginTop: 0,
                                     textAlign: 'center',
                                     marginBottom: 3,
                                     fontSize: 15,
+                                    height: 20,
                                     color: diffColor(scores[index][i + 10] - parseInt(par[i + 10]))
                                 }}
                             >
@@ -145,7 +151,7 @@ export default (ScoreLists = ({
                         </Text>
                     )
                 }
-            }
+            })
         }
         return element
     }
@@ -171,7 +177,7 @@ export default (ScoreLists = ({
                                     HOLE
                                 </Text>
                                 {holeElement()}
-                                <Text style={styles.totalScore}>{isPageOne ? 'OUT' : 'IN'}</Text>
+                                <Text style={styles.totalScore}>{isPageOne ? (hole == 9 ? 'IN' : 'OUT') : 'IN'}</Text>
 
                                 {isComplete && scores[0].length > 14 && <Text style={styles.totalScore}>TOT</Text>}
                                 {isComplete ? (
@@ -262,12 +268,13 @@ const styles = StyleSheet.create({
         fontSize: 20,
         width: 60,
         marginTop: 0,
+        height: 40,
         backgroundColor: '#033922',
         color: '#ffffff'
     },
 
     row0: {
-        marginBottom: 21,
+        marginBottom: 23,
         borderColor: '#000000',
         padding: 6,
         backgroundColor: '#44D362',
@@ -279,8 +286,6 @@ const styles = StyleSheet.create({
         height: 40
     },
     parhcp: {
-        marginBottom: 0,
-        marginTop: 0,
         backgroundColor: '#44D362',
         padding: 6,
         fontSize: 20,

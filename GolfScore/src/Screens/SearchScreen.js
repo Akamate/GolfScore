@@ -60,7 +60,6 @@ class SearchScreen extends React.Component {
     gotoCourseDetail = key => {
         const result = this.state.results.filter(result => result.key == key)
         if (result[0] != null) {
-            console.log(result[0].par)
             Actions.CourseDetailScreen({
                 par1: result[0].par,
                 hcp1: result[0].hcp,

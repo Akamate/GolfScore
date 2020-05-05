@@ -78,11 +78,9 @@ class AddCourseScreen extends React.Component {
     }
 
     onEndEditingParHcp = index => {
-        console.log(index)
         this.setState({ currentHole: index, isComplete: false })
     }
     goBackHome = () => {
-        console.log('fdsfdsds')
         const courseName = this.state.courseName
         const par = this.state.par
         const hcp = this.state.hcp
@@ -101,7 +99,6 @@ class AddCourseScreen extends React.Component {
                     this.setState({
                         isSuccess: true
                     })
-                    //Actions.reset('Home')
                 })
                 .catch(error => {
                     console.log('error ', error)
@@ -164,7 +161,12 @@ class AddCourseScreen extends React.Component {
     parhcpList = () => {
         return (
             <View style={{ alignItems: 'center' }}>
-                <ParHcpLists par={this.state.par} hcp={this.state.hcp} onEditing={this.onEndEditingParHcp} />
+                <ParHcpLists
+                    par={this.state.par}
+                    hcp={this.state.hcp}
+                    onEditing={this.onEndEditingParHcp}
+                    editable={true}
+                />
                 <CustomButton title="SAVE COURSE" onPress={this.goBackHome} disable={!this.state.isComplete} />
             </View>
         )

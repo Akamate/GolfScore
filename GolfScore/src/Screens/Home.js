@@ -17,18 +17,19 @@ import CameraRoll from '@react-native-community/cameraroll'
 import { setCourseName, setPar, setHcp } from '../reducer/actions'
 const Realm = require('realm')
 import { GolfCourseSchema } from '../model/player'
+import { Threshold, Brightness, Grayscale, Contrast } from 'react-native-image-filter-kit'
+import ImageFilter from '../ImageFilter'
 import {
-    Threshold,
-    Brightness,
-    Grayscale,
-    Invert,
-    Sharpen,
-    Contrast,
-    LuminanceToAlpha,
-    Normal,
-    cleanExtractedImagesCache
-} from 'react-native-image-filter-kit'
-import { StyleSheet, ActivityIndicator, View, Text, TouchableOpacity, Image, Dimensions } from 'react-native'
+    StyleSheet,
+    ActivityIndicator,
+    View,
+    Text,
+    TouchableOpacity,
+    ScrollView,
+    Image,
+    Dimensions
+} from 'react-native'
+
 class Home extends Component {
     constructor(props) {
         super(props)
@@ -38,7 +39,9 @@ class Home extends Component {
             imageUri: '',
             imageUri1: '',
             imgWidth: 0,
-            imageHeight: 0
+            imageHeight: 0,
+            isSinglePlayer: true,
+            numberPlayer: 1
         }
     }
 
@@ -57,10 +60,10 @@ class Home extends Component {
                     hcpArr.push(hcp)
                 })
                 this.props.setHcp(hcpArr)
-                console.log(golfCourse['0'].hcp)
-                console.log(hcpArr)
-                console.log(golfCourse['0'].par)
-                console.log(parArr)
+                // console.log(golfCourse['0'].hcp)
+                // console.log(hcpArr)
+                // console.log(golfCourse['0'].par)
+                // console.log(parArr)
                 realm.close()
             })
         }
@@ -75,90 +78,48 @@ class Home extends Component {
         }
     }
 
+    calculateHeight = () => {
+        if (this.state.numberPlayer >= 4) {
+            return this.state.numberPlayer * 92
+        } else if (this.state.numberPlayer == 1) {
+            return 120
+        } else {
+            return this.state.numberPlayer * 120 - 14 * this.state.numberPlayer
+        }
+    }
     onPressPicker = () => {
+        var height = this.calculateHeight()
         ImagePicker.openPicker({
-            height: 230,
-            width: 550,
-            cropping: true,
-            includeBase64: true
+            height: height,
+            width: 1000,
+            cropping: true
         }).then(image => {
             this.setState({
-                showIndicator: true
-                // imageUri: image.path
-            })
-            googleAPI.postImage(image.data, (err, data) => {
-                console.log(data)
-                //  Actions.ScoreView({ texts: data })
-                this.setState({
-                    showIndicator: false
-                })
+                showIndicator: true,
+                imageUri: image.path
             })
         })
     }
 
-    imageScore = () => {
-        return (
-            <Threshold
-                image={
-                    <Grayscale
-                        image={
-                            <Brightness
-                                image={
-                                    <Contrast
-                                        image={
-                                            <Image
-                                                source={{ uri: this.state.imageUri }}
-                                                style={{ width: '100%', height: '100%' }}
-                                                resizeMethod="scale"
-                                            />
-                                        }
-                                        amount={2}
-                                    />
-                                }
-                                amount={8}
-                            />
-                        }
-                    />
-                }
-                amount={5}
-                onExtractImage={({ nativeEvent }) =>
-                    this.setState({ imageUri1: nativeEvent.uri }, () => {
-                        this.base64(nativeEvent.uri)
-                    })
-                }
-                extractImageEnabled={true}
-            />
-        )
-    }
-
     onPressCamera = async () => {
+        var height = this.calculateHeight()
+
         ImagePicker.openCamera({
-            height: 500,
+            height: height,
             width: 1000,
-            cropping: true,
-            forceJpg: true
+            cropping: true
         }).then(image => {
-            this.setState(
-                {
-                    showIndicator: true,
-                    imageUri: image.path
-                },
-                () => {}
-            )
-            // googleAPI.postImage(image.data, (err, data) => {
-            //     console.log(data)
-            //     Actions.ScoreView({ texts: data })
-            //     this.setState({
-            //         showIndicator: false,
-            //         imageUri: ''
-            //     })
-            //})
+            this.setState({
+                showIndicator: true,
+                imageUri: image.path
+            })
         })
     }
 
     onPressManualButton = () => {
         Actions.ScoreView({
-            texts: [[5, 5, 4, 5, 3, 5, 8, 3, 4]]
+            texts: [[5, 5, 4, 5, 3, 5, 8, 3, 4]],
+            numberPlayer: this.state.numberPlayer
         })
     }
 
@@ -170,84 +131,103 @@ class Home extends Component {
         var data = await RNFS.readFile(`file://${uri}`, 'base64').then(res => {
             return res
         })
-        this.setState({ imageUri1: uri })
+        this.setState({ imageUri: '' })
         CameraRoll.saveToCameraRoll(uri, 'photo')
-        googleAPI.postImage(data, (err, data) => {
+        googleAPI.postImage(data, this.state.isSinglePlayer, (err, data) => {
             console.log(data)
-            Actions.ScoreView({ texts: data })
             this.setState({
                 showIndicator: false,
                 imageUri: ''
             })
+            if (data.length != 0) {
+                Actions.ScoreView({ texts: data, numberPlayer: this.state.numberPlayer })
+            }
         })
     }
     render() {
         return (
             <View style={styles.container}>
-                {this.state.imageUri != '' && this.imageScore()}
-                {/* {this.state.imageUri1 != '' && (
-                    <Image style={{ width: '100%', height: '100%' }} source={{ uri: this.state.imageUri1 }} />
-                )} */}
-                {!this.state.isSelected && (
-                    <Popup
-                        type="Danger"
-                        title="No Golf Course"
-                        button={true}
-                        textBody="Please Select Golf Course"
-                        buttontext="OKAY"
-                        callback={() => this.setState({ isSelected: true })}
-                    />
-                )}
-
-                <Text style={styles.title}>Golf Score</Text>
-                <Text style={[styles.title, { marginBottom: 20 }]}>Reader</Text>
-
-                <View style={styles.courseView}>
-                    <Text style={{ fontSize: 30, marginBottom: 10, marginTop: 10, fontWeight: 'bold' }}>
-                        Golf Course
-                    </Text>
-                    <TouchableOpacity
-                        onPress={this.gotoSearchScreen}
-                        style={{ backgroundColor: '#F2F2F7', padding: 20, borderRadius: 8 }}
-                    >
-                        <Text style={{ fontWeight: 'bold', textAlign: 'center', fontSize: 25 }}>
-                            {this.props.courseName}
+                <ScrollView contentContainerStyle={{ flexGrow: 1, justifyContent: 'center' }} bounces={false}>
+                    {this.state.imageUri != '' && <ImageFilter uri={this.state.imageUri} callback={this.base64} />}
+                    {!this.state.isSelected && (
+                        <Popup
+                            type="Danger"
+                            title="No Golf Course"
+                            button={true}
+                            textBody="Please Select Golf Course"
+                            buttontext="OKAY"
+                            callback={() => this.setState({ isSelected: true })}
+                        />
+                    )}
+                    <Text style={styles.title}>Golf Score</Text>
+                    <Text style={[styles.title, { marginBottom: 20 }]}>Reader</Text>
+                    <View style={styles.courseView}>
+                        <Text style={{ fontSize: 30, marginBottom: 10, marginTop: 10, fontWeight: 'bold' }}>
+                            Golf Course
                         </Text>
-                        <Text style={styles.courseDetailText}> Golf Course</Text>
-                        <Text style={styles.changeGolfCourse}>Tap to change golf course</Text>
-                    </TouchableOpacity>
+                        <TouchableOpacity
+                            onPress={this.gotoSearchScreen}
+                            style={{ backgroundColor: '#F2F2F7', padding: 20, borderRadius: 8 }}
+                        >
+                            <Text style={{ fontWeight: 'bold', textAlign: 'center', fontSize: 25 }}>
+                                {this.props.courseName}
+                            </Text>
+                            <Text style={styles.courseDetailText}> Golf Course</Text>
+                            <Text style={styles.changeGolfCourse}>Tap to change golf course</Text>
+                        </TouchableOpacity>
 
-                    <Text style={{ fontSize: 30, fontWeight: 'bold', marginTop: 20 }}>Score</Text>
+                        <View style={{ flexDirection: 'row' }}>
+                            <Text style={{ fontSize: 30, fontWeight: 'bold', marginTop: 20 }}>Score</Text>
+                            <TouchableOpacity
+                                onPress={() =>
+                                    this.setState({
+                                        numberPlayer: this.state.numberPlayer + 1 == 7 ? 1 : this.state.numberPlayer + 1
+                                    })
+                                }
+                            >
+                                <Text
+                                    style={{
+                                        fontSize: 20,
+                                        fontWeight: 'bold',
+                                        marginTop: 28,
+                                        marginLeft: 20,
+                                        color: '#0000ff'
+                                    }}
+                                >
+                                    {this.state.numberPlayer} Players
+                                </Text>
+                            </TouchableOpacity>
+                        </View>
 
-                    <TouchableOpacity onPress={() => Actions.ManualScore()} style={styles.scoreButton}>
-                        <Text style={styles.scoreText}> Enter Manually </Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity onPress={this.onPressManualButton} style={styles.scoreButton}>
-                        <Text style={styles.scoreText}> Scan Score Card </Text>
-                    </TouchableOpacity>
-                    <ActionSheet
-                        ref={o => (this.ActionSheet = o)}
-                        title={'Please Choose'}
-                        options={['Open Camera', 'Open Photo Gallery', 'Cancel']}
-                        cancelButtonIndex={2}
-                        onPress={index => {
-                            if (index === 0) this.onPressCamera()
-                            else if (index === 1) this.onPressPicker()
-                        }}
-                    />
-                </View>
-
-                {this.state.showIndicator && (
-                    <View style={styles.indicatorContainer}>
-                        <ActivityIndicator
-                            size="large"
-                            color="#FFFFFF"
-                            animating={this.state.showIndicator}
-                            style={{ justifyContent: 'center' }}
+                        <TouchableOpacity onPress={() => Actions.ManualScore()} style={styles.scoreButton}>
+                            <Text style={styles.scoreText}> Enter Manually </Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity onPress={this.onPressManualButton} style={styles.scoreButton}>
+                            <Text style={styles.scoreText}> Scan Score Card </Text>
+                        </TouchableOpacity>
+                        <ActionSheet
+                            ref={o => (this.ActionSheet = o)}
+                            title={'Please Choose'}
+                            options={['Open Camera', 'Open Photo Gallery', 'Cancel']}
+                            cancelButtonIndex={2}
+                            onPress={index => {
+                                if (index === 0) this.onPressCamera()
+                                else if (index === 1) this.onPressPicker()
+                            }}
                         />
                     </View>
-                )}
-                {this.state.showIndicator && <View style={styles.modalView} />}
+                    {this.state.showIndicator && (
+                        <View style={styles.indicatorContainer}>
+                            <ActivityIndicator
+                                size="large"
+                                color="#FFFFFF"
+                                animating={this.state.showIndicator}
+                                style={{ justifyContent: 'center' }}
+                            />
+                        </View>
+                    )}
+                    {this.state.showIndicator && <View style={styles.modalView} />}
+                </ScrollView>
             </View>
         )
     }
@@ -326,7 +306,8 @@ const styles = StyleSheet.create({
         marginHorizontal: 10,
         padding: 20,
         borderRadius: 30,
-        backgroundColor: '#ffffff'
+        backgroundColor: '#ffffff',
+        marginBottom: 10
     },
     courseDetailText: {
         marginTop: 5,
@@ -352,8 +333,8 @@ const styles = StyleSheet.create({
         textAlign: 'center'
     },
     title: {
-        fontSize: 50,
-        marginTop: 0,
+        fontSize: 40,
+        marginTop: 2,
         color: 'white',
         textAlign: 'center'
     },

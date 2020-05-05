@@ -8,6 +8,7 @@ import Share from 'react-native-share'
 import { system36Hcp, stableFord, doublePeoria, modifiedPeoria, strokePlay } from '../CalculateMethod'
 import MethodPopup from '../Components/MethodPopup'
 import ExportPopup from '../Components/ExportPopup'
+import PlayerNamePopup from '../Components/PlayerNamePopup'
 import { PlayerSchema } from '../model/player'
 var RNFS = require('react-native-fs')
 const Realm = require('realm')
@@ -20,34 +21,25 @@ class CalculateScoreScreen extends Component {
             isPageOne: true,
             isShowPopup: false,
             isShowExportPopup: false,
-            playerName: '',
+            playerNames: [],
             allPlayer: [],
-            isButtonDisable: false
+            isButtonDisable: false,
+            isShowPlayerNamePopup: true,
+            isSave: false
         }
     }
 
-    componentDidMount(props) {
-        arr = []
-        this.props.score.map(score => {
-            console.log(score)
-            // arr.push(score.match(/\d+(?:\.\d+)?/g).map(Number))
-        })
-        this.setState({ score: this.props.score }, () => {
+    componentDidMount() {
+        scoreArr = [...this.state.score]
+        for (i = 0; i < this.state.score.length; i++) {
+            for (j = 0; j < this.state.score[i].length; j++) {
+                scoreArr[i][j] = parseInt(scoreArr[i][j])
+            }
+        }
+
+        this.setState({ score: scoreArr }, () => {
             this.findHoles()
             this.findGrossScore()
-            Realm.open({ schema: [PlayerSchema] }).then(realm => {
-                // Create Realm objects and write to local storage
-                const players = realm
-                    .objects('Player')
-                    .filtered(
-                        'date = $0 AND golfCourse = $1',
-                        `${new Date().getDate()}-${new Date().getMonth() + 1}-${new Date().getFullYear()}`,
-                        this.props.courseName
-                    )
-                console.log(players)
-                this.setState({ allPlayer: players })
-                realm.close()
-            })
         })
     }
 
@@ -101,32 +93,29 @@ class CalculateScoreScreen extends Component {
     }
 
     onEndSelecting = (methodName, hcp, holeLists) => {
-        console.log(methodName)
-        console.log(holeLists)
         this.setState({ isShowPopup: false })
         this.calculateScore(methodName, hcp, holeLists)
     }
 
-    onSavePlayer = () => {
-        Realm.open({ schema: [PlayerSchema] }).then(realm => {
-            // Create Realm objects and write to local storage
-            realm.write(() => {
-                const player = realm.create('Player', {
-                    name: this.state.playerName,
-                    golfCourse: this.props.courseName,
-                    scores: this.state.score[0],
-                    date: `${new Date().getDate()}-${new Date().getMonth() + 1}-${new Date().getFullYear()}`
+    onSavePlayer = goHome => {
+        if (this.state.playerNames.length == 1) {
+            Realm.open({ schema: [PlayerSchema] }).then(realm => {
+                realm.write(() => {
+                    const player = realm.create('Player', {
+                        name: this.state.playerNames[0],
+                        golfCourse: this.props.courseName,
+                        scores: this.state.score[0],
+                        date: `${new Date().getDate()}-${new Date().getMonth() + 1}-${new Date().getFullYear()}`
+                    })
                 })
+                if (goHome) realm.close()
             })
-
-            realm.close()
-        })
-        Actions.reset('Home')
+        }
+        if (goHome) Actions.reset('Home')
     }
 
     exportCSV = () => {
         this.onClosePopup()
-        var name = `Player,${this.state.playerName}, ,\n`
         var row0 = 'Hole,'
         var par = 'PAR,'
         var hcp = 'HCP,'
@@ -155,8 +144,8 @@ class CalculateScoreScreen extends Component {
         }
         par += '\n'
         hcp += '\n'
-        alltext = name + row0 + scores + par + hcp
-        // write the file
+        alltext = row0 + scores + par + hcp
+
         this.writeFile(alltext)
     }
 
@@ -179,27 +168,24 @@ class CalculateScoreScreen extends Component {
     }
 
     onClosePopup = () => {
-        this.setState({ isShowPopup: false, isShowExportPopup: false })
+        this.setState({ isShowPopup: false, isShowExportPopup: false, isShowPlayerNamePopup: false })
     }
 
     onPressMultiple = () => {
         this.onClosePopup()
+        this.onSavePlayer(false)
         Actions.Multiple()
+    }
+
+    onSetPlayerName = playerNames => {
+        this.setState({ playerNames: playerNames })
+        this.onClosePopup()
     }
 
     render() {
         return (
             <View style={{ flex: 1, backgroundColor: 'white' }}>
-                <ScrollView scrollEnabled={!this.state.isShowPopup}>
-                    <View style={{ flexDirection: 'row', marginTop: 50 }}>
-                        <Text style={{ fontSize: 20, marginLeft: 10, marginRight: 10 }}>Player Name :</Text>
-                        <TextInput
-                            style={{ fontSize: 20 }}
-                            value={this.state.playerName}
-                            placeholder={'Player Name'}
-                            onChangeText={text => this.setState({ playerName: text })}
-                        />
-                    </View>
+                <ScrollView scrollEnabled={!this.state.isShowPopup} style={{ marginTop: 40 }}>
                     <ScoreLists
                         par={this.props.par}
                         hcp={this.props.hcp}
@@ -216,20 +202,32 @@ class CalculateScoreScreen extends Component {
                             />
                         )}
                         <CustomButton title="Select Method" onPress={() => this.setState({ isShowPopup: true })} />
-                        <CustomButton title="Save" onPress={this.onSavePlayer} />
                         <CustomButton title="Export Score" onPress={() => this.setState({ isShowExportPopup: true })} />
-                        <CustomButton title="BACK HOME" onPress={() => Actions.reset('Home')} />
+                        {/* <CustomButton title="BACK HOME" onPress={() => Actions.reset('Home')} /> */}
+                        <CustomButton
+                            title={this.state.playerNames.length > 1 ? 'GO HOME' : 'SAVE'}
+                            onPress={this.onSavePlayer}
+                        />
                     </View>
                 </ScrollView>
+
                 {this.state.isShowPopup && (
-                    <MethodPopup onEndSelecting={this.onEndSelecting} onClosePopup={this.onClosePopup} />
+                    <MethodPopup
+                        onEndSelecting={this.onEndSelecting}
+                        onClosePopup={this.onClosePopup}
+                        scores={this.state.score}
+                    />
                 )}
                 {this.state.isShowExportPopup && (
                     <ExportPopup
                         onClosePopup={this.onClosePopup}
                         onPressSingle={this.exportCSV}
                         onPressMultiple={this.onPressMultiple}
+                        multiple={this.state.playerNames.length == 1}
                     />
+                )}
+                {this.state.isShowPlayerNamePopup && (
+                    <PlayerNamePopup numOfPlayer={this.state.score.length} onSetPlayerName={this.onSetPlayerName} />
                 )}
             </View>
         )

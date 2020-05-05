@@ -1,5 +1,5 @@
 import React from 'react'
-import { View, Text, StyleSheet, TouchableOpacity, Button, TextInput, ScrollView } from 'react-native'
+import { View, Text, StyleSheet, TouchableOpacity, Button, TextInput, ScrollView, Platform } from 'react-native'
 import { Actions } from 'react-native-router-flux'
 import { connect } from 'react-redux'
 
@@ -120,7 +120,13 @@ class ManualScoreScreen extends React.Component {
                             style={{ flexDirection: 'row', justifyContent: 'flex-start', marginTop: 10, marginLeft: 5 }}
                         >
                             <TextInput
-                                style={{ marginLeft: 60, fontSize: 30, alignItems: 'center', borderBottomWidth: 1 }}
+                                style={{
+                                    marginLeft: 60,
+                                    fontSize: 30,
+                                    marginTop: Platform.OS === 'ios' ? 0 : -10,
+                                    alignItems: 'center',
+                                    borderBottomWidth: 1
+                                }}
                                 autoCapitalize="none"
                                 autoCorrect={false}
                                 placeholder={'P' + (index + 1)}
@@ -153,7 +159,12 @@ class ManualScoreScreen extends React.Component {
                         <Text style={styles.buttonText}> Previous </Text>
                     </TouchableOpacity>
                     <TouchableOpacity
-                        onPress={() => this.setState({ currentHole: this.state.currentHole + 1 })}
+                        onPress={() =>
+                            this.setState({
+                                currentHole:
+                                    this.state.currentHole >= 18 ? this.state.currentHole : this.state.currentHole + 1
+                            })
+                        }
                         style={styles.buttonView}
                     >
                         <Text style={styles.buttonText}> Next </Text>
@@ -170,41 +181,23 @@ class ManualScoreScreen extends React.Component {
     render() {
         return (
             <ScrollView style={styles.container}>
-                <View style={{ backgroundColor: '#44D362', height: 100, flexDirection: 'row' }}>
-                    <View style={styles.button}>
-                        <Button title="< Back" onPress={this.goBackHome} />
-                    </View>
-                    <Text style={{ textAlign: 'center', fontSize: 30, color: 'white', marginTop: 50, marginLeft: 10 }}>
-                        Manually Score
-                    </Text>
+                {/* <View style={styles.viewContainer}> */}
+                <View style={styles.button}>
+                    <Button title="< Back" onPress={this.goBackHome} />
                 </View>
+                {/* <Text style={{ textAlign: 'center', fontSize: 30, color: 'white', marginTop: 50, marginLeft: 10 }}>
+                        Manually Score
+                    </Text> */}
+                {/* </View> */}
                 <View style={{ flexDirection: 'column', marginTop: 20, alignItems: 'center' }}>
                     <Text style={{ fontSize: 25, marginLeft: 20, fontWeight: 'bold' }}>Num Of Player</Text>
                     <View style={{ flexDirection: 'row', marginTop: 10 }}>
-                        <TouchableOpacity
-                            onPress={this.increaseNumberPlayer}
-                            style={{
-                                borderWidth: 1,
-                                width: 40,
-                                height: 40,
-                                borderColor: 'blue',
-                                borderRadius: 4,
-                                alignItems: 'center'
-                            }}
-                        >
+                        <TouchableOpacity onPress={this.increaseNumberPlayer} style={styles.numPlayerButton}>
                             <Text style={{ fontSize: 30 }}>+</Text>
                         </TouchableOpacity>
                         <TouchableOpacity
                             onPress={this.decreaseNumberPlayer}
-                            style={{
-                                borderWidth: 1,
-                                width: 40,
-                                height: 40,
-                                borderColor: 'blue',
-                                borderRadius: 4,
-                                marginLeft: 10,
-                                alignItems: 'center'
-                            }}
+                            style={[styles.numPlayerButton, { marginLeft: 10 }]}
                         >
                             <Text style={{ fontSize: 30 }}>-</Text>
                         </TouchableOpacity>
@@ -221,17 +214,20 @@ const styles = StyleSheet.create({
         backgroundColor: '#FFFFFF',
         flex: 1
     },
+    viewContainer: {
+        backgroundColor: '#44D362',
+        height: 100,
+        flexDirection: 'row'
+    },
     hole0: {
         marginBottom: 5,
         marginTop: 10,
         padding: 6,
-        // backgroundColor: '#323232',
         fontWeight: 'bold',
         fontSize: 30,
         borderRadius: 2,
         width: 160,
         textAlign: 'center',
-        //  color: '#FFFFFF',
         alignItems: 'center'
     },
     parhcp: {
@@ -275,6 +271,14 @@ const styles = StyleSheet.create({
     },
     editDetailContainer: {
         marginTop: 30,
+        alignItems: 'center'
+    },
+    numPlayerButton: {
+        borderWidth: 1,
+        width: 40,
+        height: 40,
+        borderColor: 'blue',
+        borderRadius: 4,
         alignItems: 'center'
     }
 })

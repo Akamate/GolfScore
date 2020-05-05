@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { View, Text, TextInput, StyleSheet, FlatList, TouchableOpacity, TouchableWithoutFeedback } from 'react-native'
 
-export default (ExportPopup = ({ onClosePopup, onPressSingle, onPressMultiple, multiple }) => {
+export default (EditScorePopup = ({ index, holeNumber, score, onEditing, onClosePopup }) => {
     return (
         <TouchableWithoutFeedback
             onPress={() => {
@@ -22,22 +22,23 @@ export default (ExportPopup = ({ onClosePopup, onPressSingle, onPressMultiple, m
             >
                 <TouchableWithoutFeedback>
                     <View style={styles.popupContainer}>
-                        <Text style={([styles.buttonText], { fontSize: 25 })}>Export</Text>
+                        <Text style={([styles.buttonText], { fontSize: 25 })}>Edit Score</Text>
                         <Text style={([styles.buttonText], { marginBottom: 40, fontSize: 25 })}>
-                            Single or Multiple
+                            Hole {holeNumber + 1}
                         </Text>
-                        <View style={{ flexDirection: 'row' }}>
-                            <TouchableOpacity style={styles.buttonView} onPress={onPressSingle}>
-                                <Text style={styles.buttonText}>Single</Text>
-                            </TouchableOpacity>
-                            <TouchableOpacity
-                                style={[styles.buttonView, { opacity: multiple ? 1 : 0.5 }]}
-                                onPress={onPressMultiple}
-                                disabled={!multiple}
-                            >
-                                <Text style={styles.buttonText}>Multiple</Text>
-                            </TouchableOpacity>
-                        </View>
+                        <TextInput
+                            style={{ width: 100, height: 40, textAlign: 'center', fontSize: 30 }}
+                            value={score}
+                            placeholder={`Hole ${holeNumber + 1} `}
+                            onChangeText={text => onEditing(text)}
+                            keyboardType="number-pad"
+                            maxLength={2}
+                            autoFocus={true}
+                        />
+
+                        <TouchableOpacity style={styles.buttonView} onPress={onClosePopup}>
+                            <Text style={styles.buttonText}>Save</Text>
+                        </TouchableOpacity>
                     </View>
                 </TouchableWithoutFeedback>
             </View>
