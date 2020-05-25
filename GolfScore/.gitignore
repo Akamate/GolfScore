@@ -1,6 +1,7 @@
 # OSX
 #
 .DS_Store
+src/api/config.js
 config.json
 # Xcode
 #
