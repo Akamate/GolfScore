@@ -21,7 +21,8 @@ class MultipleExportScreen extends React.Component {
             playersScore: null,
             score: [],
             playerName: '',
-            isPageOne: true
+            isPageOne: true,
+            scoreLength: this.props.scoreLength
         }
     }
 
@@ -38,18 +39,24 @@ class MultipleExportScreen extends React.Component {
                     `${new Date().getDate()}-${new Date().getMonth() + 1}-${new Date().getFullYear()}`,
                     this.props.courseName
                 )
-            console.log(players)
+            // console.log(players)
             const players1 = realm.objects('Player')
-            console.log(players1)
+
+            // console.log(players1)
+            var idx = 0
             if (players.length != 0) {
                 const result = []
                 const playersScore = []
                 players.map((player, index) => {
-                    result.push({ name: player.name, index: index })
-                    playersScore.push([])
-                    player.scores.map(score => {
-                        playersScore[index].push(score)
-                    })
+                    console.log(player)
+                    if (player.scores.length == this.state.scoreLength) {
+                        result.push({ name: player.name, index: idx })
+                        playersScore.push([])
+                        player.scores.map(score => {
+                            playersScore[idx].push(score)
+                        })
+                        idx++
+                    }
                 })
 
                 this.setState({
@@ -134,6 +141,7 @@ class MultipleExportScreen extends React.Component {
     }
 
     render() {
+        console.log(this.state.score)
         return (
             <View
                 style={{
@@ -160,14 +168,14 @@ class MultipleExportScreen extends React.Component {
                             isComplete={true}
                             isPageOne={this.state.isPageOne}
                         />
-                        {/* {this.state.score.length > 13 && (
+                        {this.state.score[0].length > 13 && (
                             <View style={{ alignItems: 'center' }}>
                                 <CustomButton
                                     title={this.state.isPageOne ? 'Next >' : '< Previous'}
                                     onPress={() => this.setState({ isPageOne: !this.state.isPageOne })}
                                 />
                             </View>
-                        )} */}
+                        )}
                     </ScrollView>
                 )}
                 {!this.state.isSelected && (

@@ -1,5 +1,5 @@
 import React from 'react'
-import { Text, TextInput, StyleSheet, View, Button, FlatList, TouchableOpacity } from 'react-native'
+import { Text, Platform, StyleSheet, View, Button, FlatList, TouchableOpacity } from 'react-native'
 import SearchBar from '../Components/Searchbar'
 import { Actions } from 'react-native-router-flux'
 import db from '../api/config'
@@ -43,7 +43,6 @@ class SearchScreen extends React.Component {
                     var childData = childSnapshot.val()
                     let firstChar = childData.courseName[0]
                     childData.courseName = childData.courseName.toUpperCase()
-                    // childData.courseName = firstChar + childData.courseName
                     childData.key = childSnapshot.key
                     courseLists.push(childData)
                 })
@@ -80,14 +79,20 @@ class SearchScreen extends React.Component {
                     backgroundColor: '#FFFFFF'
                 }}
             >
-                <View style={styles.button}>
-                    <Button title="< Back" onPress={this.goBackHome} />
-                </View>
+                {Platform.OS == 'ios' && (
+                    <View style={styles.button}>
+                        <Button title="< Back" onPress={this.goBackHome} />
+                    </View>
+                )}
+
                 <View style={styles.button1}>
+                    {/* <TouchableOpacity onPress={this.addCourse}>
+                        <Text style={{ fontSize: 20, color: 'sky' }}>ADD</Text>
+                    </TouchableOpacity> */}
                     <Button title="ADD" onPress={this.addCourse} />
                 </View>
 
-                <View style={styles.background}>
+                <View style={[styles.background, { marginTop: Platform.OS == 'ios' ? 5 : 80 }]}>
                     <SearchBar
                         term={this.state.term}
                         onChangeText={text => this.setState({ term: text })}
@@ -98,7 +103,7 @@ class SearchScreen extends React.Component {
                     style={{ padding: 5 }}
                     showsHorizontalScrollIndicator={false}
                     data={this.state.results}
-                    renderItem={({ item, key }) => (
+                    renderItem={({ item }) => (
                         <TouchableOpacity onPress={() => this.gotoCourseDetail(item.key)}>
                             <Text style={styles.courseName}>{item.courseName}</Text>
                             <View

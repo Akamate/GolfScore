@@ -2,7 +2,9 @@ import config from './../../config.json'
 class GoogleAPI {
     static postImage = async (data, numberPlayer, callback) => {
         var type = ''
+        console.log(numberPlayer)
         type = numberPlayer <= 1 ? 'TEXT_DETECTION' : 'DOCUMENT_TEXT_DETECTION'
+        console.log(type)
         let googleVisionRes = await fetch(config.googleCloud.api + config.googleCloud.apiKey, {
             method: 'POST',
             body: JSON.stringify({
@@ -128,13 +130,8 @@ class GoogleAPI {
                 len += lines[i][j].length
             }
             console.log(len)
-            if (
-                isNaN(lines[i][lines[i].length - 1]) &&
-                parseInt(lines[i][lines[i].length - 1]) >= 10 &&
-                parseInt(lines[i][lines[i].length - 1]) <= 99 &&
-                len > 9
-            ) {
-                if (lines[i][lines[i].length - 1][2] == '1') {
+            if (isNaN(lines[i][lines[i].length - 1]) && parseInt(lines[i][lines[i].length - 1]) >= 10 && len > 9) {
+                if (lines[i][lines[i].length - 1][lines[i][lines[i].length - 1].length - 1] == '1') {
                     lines[i][lines[i].length - 1].splice(0)
                 }
             }
@@ -162,6 +159,9 @@ class GoogleAPI {
                     for (j = 0; j < lines[i].length - 9; j++) {
                         lines[i] = lines[i].replace('1', ' ')
                     }
+                    // for (j = lines[i].length - 8; j >= 0; j--) {
+                    //     if (lines[i][j] == '1') lines[i][j] = ''
+                    // }
                 }
             }
             lines[i] = lines[i].replace(/[a-zA-Z:-|/. -]/g, '')

@@ -137,12 +137,13 @@ class AddCourseScreen extends React.Component {
                         callback={this.goSearchScreen}
                     />
                 )}
+                {Platform.OS == 'ios' && (
+                    <View style={styles.button}>
+                        <Button title="< Back" onPress={this.goSearchScreen} />
+                    </View>
+                )}
 
-                <View style={styles.button}>
-                    <Button title="< Back" onPress={this.goSearchScreen} />
-                </View>
-
-                <View style={styles.textInput}>
+                <View style={[styles.textInput, { marginTop: Platform.OS == 'ios' ? 5 : 80 }]}>
                     <TextInput
                         style={{ borderBottomWidth: 1, marginTop: 20, fontSize: 30, alignItems: 'center' }}
                         autoCapitalize="none"

@@ -1,5 +1,5 @@
 import React from 'react'
-import { View, Text, FlatList, StyleSheet, TouchableOpacity, Button, ScrollView } from 'react-native'
+import { View, Text, FlatList, StyleSheet, Platform, Button, ScrollView } from 'react-native'
 import { Actions } from 'react-native-router-flux'
 import { connect } from 'react-redux'
 import { setCourseName, setPar, setHcp } from '../reducer/actions'
@@ -103,9 +103,11 @@ class CourseDetailScreen extends React.Component {
         return (
             <ScrollView style={styles.container}>
                 <View style={{ backgroundColor: '#ffffff', height: 60 }}>
-                    <View style={styles.button}>
-                        <Button title="< Back" onPress={this.goSearchScreen} />
-                    </View>
+                    {Platform.OS == 'ios' && (
+                        <View style={styles.button}>
+                            <Button title="< Back" onPress={this.goSearchScreen} />
+                        </View>
+                    )}
                 </View>
 
                 <View style={{ alignItems: 'center' }}>

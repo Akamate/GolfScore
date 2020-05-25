@@ -176,3 +176,25 @@ export const modifiedPeoria = (scores, par, holeLists) => {
     })
     return newScore
 }
+
+export const matchPlay = scores => {
+    newScore = scores
+    sumPlayer1 = 0
+    sumPlayer2 = 0
+    newScore[0].pop()
+    newScore[0].pop()
+    newScore[1].pop()
+    newScore[1].pop()
+    for (i = 0; i < newScore[0].length; i++) {
+        if (parseInt(newScore[0][i]) > parseInt(newScore[1][i])) {
+            sumPlayer2 += 1
+        } else if (parseInt(newScore[0][i]) < parseInt(newScore[1][i])) {
+            sumPlayer1 += 1
+        }
+    }
+    newScore[0].push(0)
+    newScore[1].push(0)
+    newScore[0].push(sumPlayer1)
+    newScore[1].push(sumPlayer2)
+    return newScore
+}

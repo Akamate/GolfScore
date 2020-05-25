@@ -124,11 +124,11 @@ export default (ScoreLists = ({
         } else {
             arr = [10, 11, 12, 13, 14, 15, 16, 17, 18, 19]
             arr.map(i => {
-                if (i < 9) {
+                if (i < 19) {
                     element.push(
                         <View>
                             <TouchableOpacity onPress={() => (editable ? onEditingScore(index, i) : null)}>
-                                <Text style={styles.column0}>{scores[index][i + 10]}</Text>
+                                <Text style={styles.column0}>{scores[index][i]}</Text>
                             </TouchableOpacity>
                             <Text
                                 style={{
@@ -137,17 +137,17 @@ export default (ScoreLists = ({
                                     marginBottom: 3,
                                     fontSize: 15,
                                     height: 20,
-                                    color: diffColor(scores[index][i + 10] - parseInt(par[i + 10]))
+                                    color: diffColor(scores[index][i] - parseInt(par[i]))
                                 }}
                             >
-                                {scores[index][i + 10] != '' ? scores[index][i + 10] - parseInt(par[i + 10]) : '  '}
+                                {scores[index][i] != '' ? scores[index][i] - parseInt(par[i]) : '  '}
                             </Text>
                         </View>
                     )
                 } else {
                     element.push(
                         <Text style={[styles.totalScore, { backgroundColor: '#033922', color: '#ffffff' }]}>
-                            {scores[index][i + 10]}
+                            {scores[index][i]}
                         </Text>
                     )
                 }

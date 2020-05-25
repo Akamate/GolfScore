@@ -24,6 +24,8 @@ export default (MethodPopup = ({ onEndSelecting, onClosePopup, scores }) => {
                 setName(methodName)
                 setPeoria(true)
             }
+        } else if (methodName == 'Match Play') {
+            onEndSelecting(methodName, null, null)
         }
     }
     const strokePlayElement = () => {
@@ -153,6 +155,7 @@ export default (MethodPopup = ({ onEndSelecting, onClosePopup, scores }) => {
                                     howsHorizontalScrollIndicator={false}
                                     data={[
                                         'Stroke Play',
+                                        'Match Play',
                                         'Stable Ford',
                                         'Double Peoria',
                                         'Modified Peoria',

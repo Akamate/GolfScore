@@ -181,15 +181,15 @@ class ManualScoreScreen extends React.Component {
     render() {
         return (
             <ScrollView style={styles.container}>
-                {/* <View style={styles.viewContainer}> */}
-                <View style={styles.button}>
-                    <Button title="< Back" onPress={this.goBackHome} />
-                </View>
-                {/* <Text style={{ textAlign: 'center', fontSize: 30, color: 'white', marginTop: 50, marginLeft: 10 }}>
-                        Manually Score
-                    </Text> */}
-                {/* </View> */}
-                <View style={{ flexDirection: 'column', marginTop: 20, alignItems: 'center' }}>
+                {Platform.OS == 'ios' && (
+                    <View style={styles.button}>
+                        <Button title="< Back" onPress={this.goBackHome} />
+                    </View>
+                )}
+
+                <View
+                    style={{ flexDirection: 'column', marginTop: Platform.OS == 'ios' ? 10 : 50, alignItems: 'center' }}
+                >
                     <Text style={{ fontSize: 25, marginLeft: 20, fontWeight: 'bold' }}>Num Of Player</Text>
                     <View style={{ flexDirection: 'row', marginTop: 10 }}>
                         <TouchableOpacity onPress={this.increaseNumberPlayer} style={styles.numPlayerButton}>

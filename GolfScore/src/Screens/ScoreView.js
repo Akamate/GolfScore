@@ -5,7 +5,6 @@ import {
     StyleSheet,
     ActivityIndicator,
     View,
-    Button,
     ScrollView,
     Text,
     Dimensions,
@@ -19,7 +18,6 @@ import CameraRoll from '@react-native-community/cameraroll'
 import { connect } from 'react-redux'
 import ScoreLists from '../Components/ScoreLists'
 import CustomButton from '../Components/CustomButton'
-import { Threshold, Brightness, Grayscale, Contrast } from 'react-native-image-filter-kit'
 import ImageFilter from '../ImageFilter'
 import EditScorePopup from '../Components/EditScorePopup'
 class ScoreView extends Component {
@@ -118,7 +116,7 @@ class ScoreView extends Component {
                 for (let i = 0; i < this.state.score.length; i++) {
                     array[i] = array[i].concat(array1[i])
                 }
-
+                console.log(array)
                 this.setState({ score: array }, () => {
                     Actions.CalculateScoreScreen({
                         score: array,
@@ -208,7 +206,7 @@ class ScoreView extends Component {
     onEditingScore = text => {
         const newArray = [...this.state.score]
         this.setState({ scoreAtEdit: text })
-        newArray[this.state.indexAtEdit][this.state.holeAtEdit] = text != '' ? parseInt(text) : ''
+        newArray[this.state.indexAtEdit][this.state.holeAtEdit - this.state.hole] = text != '' ? parseInt(text) : '' //tomorrow
         this.setState({ score: newArray }, () => {
             if (text != '') this.findTotalScore()
         })
@@ -219,7 +217,10 @@ class ScoreView extends Component {
     render() {
         return (
             <View style={styles.container}>
-                <ScrollView contentContainerStyle={{ flexGrow: 1, justifyContent: 'center' }}>
+                <ScrollView
+                    contentContainerStyle={{ flexGrow: 1, justifyContent: 'center' }}
+                    scrollEnabled={!this.state.isShowPopup}
+                >
                     {this.state.imageUri != '' && <ImageFilter uri={this.state.imageUri} callback={this.base64} />}
                     {Platform.OS === 'ios' && (
                         <View

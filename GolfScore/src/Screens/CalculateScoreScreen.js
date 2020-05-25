@@ -5,7 +5,7 @@ import CustomButton from '../Components/CustomButton'
 import ScoreLists from '../Components/ScoreLists'
 import { connect } from 'react-redux'
 import Share from 'react-native-share'
-import { system36Hcp, stableFord, doublePeoria, modifiedPeoria, strokePlay } from '../CalculateMethod'
+import { system36Hcp, stableFord, doublePeoria, modifiedPeoria, strokePlay, matchPlay } from '../CalculateMethod'
 import MethodPopup from '../Components/MethodPopup'
 import ExportPopup from '../Components/ExportPopup'
 import PlayerNamePopup from '../Components/PlayerNamePopup'
@@ -33,7 +33,7 @@ class CalculateScoreScreen extends Component {
         scoreArr = [...this.state.score]
         for (i = 0; i < this.state.score.length; i++) {
             for (j = 0; j < this.state.score[i].length; j++) {
-                scoreArr[i][j] = parseInt(scoreArr[i][j])
+                if (scoreArr[i][j] != '') scoreArr[i][j] = parseInt(scoreArr[i][j])
             }
         }
 
@@ -87,6 +87,10 @@ class CalculateScoreScreen extends Component {
             scores = doublePeoria(this.state.score, holeLists)
         } else if (methodName == 'Stable Ford') {
             scores = stableFord(this.state.score, this.props.par, this.props.hcp)
+        } else if (methodName == 'modifiedPeoria') {
+            scores = modifiedPeoria(this.state.score, holeLists)
+        } else if (methodName == 'Match Play') {
+            scores = matchPlay(this.state.score)
         }
 
         this.setState({ score: scores })
@@ -120,13 +124,13 @@ class CalculateScoreScreen extends Component {
         var par = 'PAR,'
         var hcp = 'HCP,'
         if (this.state.score[0].length > 12) {
-            row0 = 'Hole,1,2,3,4,5,6,7,8,9,IN,10,11,12,13,14,15,16,17,18,OUT,TOT,H/C,NET\n'
+            row0 = 'Hole,1,2,3,4,5,6,7,8,9,OUT,10,11,12,13,14,15,16,17,18,IN,TOT,H/C,NET\n'
             for (i = 0; i < this.props.par.length; i++) {
                 par += `${this.props.par[i]},`
                 hcp += i == 9 ? '  ,' : i < 9 ? `${this.props.hcp[i]},` : i < 19 ? `${this.props.hcp[i - 1]},` : ''
             }
         } else {
-            row0 = 'Hole,1,2,3,4,5,6,7,8,9,IN,H/C,NET\n'
+            row0 = 'Hole,1,2,3,4,5,6,7,8,9,OUT,H/C,NET\n'
             for (i = 0; i < 10; i++) {
                 par += `${this.props.par[i]},`
                 hcp += i < 9 ? `${this.props.hcp[i]},` : ' '
@@ -134,7 +138,7 @@ class CalculateScoreScreen extends Component {
         }
         scores = ''
         for (i = 0; i < this.state.score.length; i++) {
-            scores += `P${i + 1},`
+            scores += this.state.playerNames[i] + ','
             for (j = 0; j < this.state.score[i].length; j++) {
                 if (this.state.score[i][j] != '') {
                     scores += `${this.state.score[i][j]},`
@@ -150,7 +154,7 @@ class CalculateScoreScreen extends Component {
     }
 
     writeFile = alltext => {
-        var path = RNFS.DocumentDirectoryPath + `/${this.state.playerName}.csv`
+        var path = RNFS.DocumentDirectoryPath + `/${this.state.playerNames[0]}.csv`
         RNFS.writeFile(path, alltext, 'utf8')
             .then(success => {
                 console.log('FILE WRITTEN!')
@@ -174,7 +178,7 @@ class CalculateScoreScreen extends Component {
     onPressMultiple = () => {
         this.onClosePopup()
         this.onSavePlayer(false)
-        Actions.Multiple()
+        Actions.Multiple({ scoreLength: this.state.score[0].length })
     }
 
     onSetPlayerName = playerNames => {
@@ -203,11 +207,13 @@ class CalculateScoreScreen extends Component {
                         )}
                         <CustomButton title="Select Method" onPress={() => this.setState({ isShowPopup: true })} />
                         <CustomButton title="Export Score" onPress={() => this.setState({ isShowExportPopup: true })} />
-                        {/* <CustomButton title="BACK HOME" onPress={() => Actions.reset('Home')} /> */}
                         <CustomButton
                             title={this.state.playerNames.length > 1 ? 'GO HOME' : 'SAVE'}
                             onPress={this.onSavePlayer}
                         />
+                        {this.state.playerNames.length == 1 && (
+                            <CustomButton title="BACK HOME" onPress={() => Actions.reset('Home')} />
+                        )}
                     </View>
                 </ScrollView>
 

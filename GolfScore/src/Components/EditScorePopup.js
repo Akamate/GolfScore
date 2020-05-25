@@ -27,7 +27,7 @@ export default (EditScorePopup = ({ index, holeNumber, score, onEditing, onClose
                             Hole {holeNumber + 1}
                         </Text>
                         <TextInput
-                            style={{ width: 100, height: 40, textAlign: 'center', fontSize: 30 }}
+                            style={{ width: 100, height: 60, textAlign: 'center', fontSize: 30 }}
                             value={score}
                             placeholder={`Hole ${holeNumber + 1} `}
                             onChangeText={text => onEditing(text)}

@@ -1,9 +1,9 @@
-import { Threshold, Brightness, Grayscale, Contrast } from 'react-native-image-filter-kit'
+import { Threshold, Brightness, Grayscale, Contrast, Normal } from 'react-native-image-filter-kit'
 import { Image } from 'react-native'
 import React, { Component } from 'react'
 export default (imageScore = ({ uri, callback }) => {
     return (
-        <Contrast
+        <Normal
             image={
                 <Threshold
                     image={
@@ -30,7 +30,6 @@ export default (imageScore = ({ uri, callback }) => {
                     amount={2}
                 />
             }
-            amount={1}
             onExtractImage={({ nativeEvent }) =>
                 // this.setState({ imageUri1: nativeEvent.uri }, () => {
 

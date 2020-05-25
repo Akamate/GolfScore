@@ -17,8 +17,8 @@ import CameraRoll from '@react-native-community/cameraroll'
 import { setCourseName, setPar, setHcp } from '../reducer/actions'
 const Realm = require('realm')
 import { GolfCourseSchema } from '../model/player'
-import { Threshold, Brightness, Grayscale, Contrast } from 'react-native-image-filter-kit'
 import ImageFilter from '../ImageFilter'
+import calculateHeight from '../CalculateHeight'
 import {
     StyleSheet,
     ActivityIndicator,
@@ -27,7 +27,8 @@ import {
     TouchableOpacity,
     ScrollView,
     Image,
-    Dimensions
+    Dimensions,
+    AsyncStorage
 } from 'react-native'
 
 class Home extends Component {
@@ -46,6 +47,11 @@ class Home extends Component {
     }
 
     componentDidMount = () => {
+        this.getGolfCourse()
+        this.getNumberPlayer()
+    }
+
+    getGolfCourse = () => {
         if (this.props.courseName == undefined) {
             Realm.open({ schema: [GolfCourseSchema] }).then(realm => {
                 const golfCourse = realm.objects('GolfCourse')
@@ -60,35 +66,39 @@ class Home extends Component {
                     hcpArr.push(hcp)
                 })
                 this.props.setHcp(hcpArr)
-                // console.log(golfCourse['0'].hcp)
-                // console.log(hcpArr)
-                // console.log(golfCourse['0'].par)
-                // console.log(parArr)
                 realm.close()
             })
+        }
+    }
+    saveNumberPlayer = async () => {
+        try {
+            await AsyncStorage.setItem('numberPlayer', this.state.numberPlayer.toString())
+        } catch (error) {
+            // Error saving data
+        }
+    }
+
+    getNumberPlayer = async () => {
+        try {
+            const value = await AsyncStorage.getItem('numberPlayer')
+            if (value !== null) {
+                this.setState({ numberPlayer: parseInt(value) })
+            }
+        } catch (error) {
+            console.log(error)
         }
     }
 
     showActionSheet = () => {
         if (this.props.courseName == null) {
-            // this.setState({ isSelected: false })
-            this.ActionSheet.show()
+            this.setState({ isSelected: false })
         } else {
             this.ActionSheet.show()
         }
     }
 
-    calculateHeight = () => {
-        if (this.state.numberPlayer >= 4) {
-            return this.state.numberPlayer * 92
-        } else if (this.state.numberPlayer == 1) {
-            return 120
-        } else {
-            return this.state.numberPlayer * 120 - 14 * this.state.numberPlayer
-        }
-    }
     onPressPicker = () => {
-        var height = this.calculateHeight()
+        var height = calculateHeight(this.state.numberPlayer)
         ImagePicker.openPicker({
             height: height,
             width: 1000,
@@ -102,7 +112,7 @@ class Home extends Component {
     }
 
     onPressCamera = async () => {
-        var height = this.calculateHeight()
+        var height = calculateHeight(this.state.numberPlayer)
 
         ImagePicker.openCamera({
             height: height,
@@ -133,7 +143,7 @@ class Home extends Component {
         })
         this.setState({ imageUri: '' })
         CameraRoll.saveToCameraRoll(uri, 'photo')
-        googleAPI.postImage(data, this.state.isSinglePlayer, (err, data) => {
+        googleAPI.postImage(data, this.state.numberPlayer, (err, data) => {
             console.log(data)
             this.setState({
                 showIndicator: false,
@@ -180,9 +190,15 @@ class Home extends Component {
                             <Text style={{ fontSize: 30, fontWeight: 'bold', marginTop: 20 }}>Score</Text>
                             <TouchableOpacity
                                 onPress={() =>
-                                    this.setState({
-                                        numberPlayer: this.state.numberPlayer + 1 == 7 ? 1 : this.state.numberPlayer + 1
-                                    })
+                                    this.setState(
+                                        {
+                                            numberPlayer:
+                                                this.state.numberPlayer + 1 == 7 ? 1 : this.state.numberPlayer + 1
+                                        },
+                                        () => {
+                                            this.saveNumberPlayer()
+                                        }
+                                    )
                                 }
                             >
                                 <Text
@@ -202,7 +218,7 @@ class Home extends Component {
                         <TouchableOpacity onPress={() => Actions.ManualScore()} style={styles.scoreButton}>
                             <Text style={styles.scoreText}> Enter Manually </Text>
                         </TouchableOpacity>
-                        <TouchableOpacity onPress={this.onPressManualButton} style={styles.scoreButton}>
+                        <TouchableOpacity onPress={this.showActionSheet} style={styles.scoreButton}>
                             <Text style={styles.scoreText}> Scan Score Card </Text>
                         </TouchableOpacity>
                         <ActionSheet
