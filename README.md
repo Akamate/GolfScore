@@ -8,3 +8,4 @@
 - Google OCR API
 - Redux
 
+<img src = "https://s12.aconvert.com/convert/p3r68-cdx67/tw92a-ihkyy.jpeg">
